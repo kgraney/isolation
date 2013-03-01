@@ -7,8 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0AAC326216E07049009B5979 /* point.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AAC326016E07049009B5979 /* point.cpp */; };
 		0AB6ACF116E0680B00A16D57 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AB6ACF016E0680B00A16D57 /* main.cpp */; };
 		0AB6ACF316E0680B00A16D57 /* isolation.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = 0AB6ACF216E0680B00A16D57 /* isolation.1 */; };
+		0AB6ACFB16E0683300A16D57 /* board.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AB6ACF916E0683300A16D57 /* board.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -25,9 +27,13 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		0AAC326016E07049009B5979 /* point.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = point.cpp; sourceTree = "<group>"; };
+		0AAC326116E07049009B5979 /* point.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = point.h; sourceTree = "<group>"; };
 		0AB6ACED16E0680B00A16D57 /* isolation */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = isolation; sourceTree = BUILT_PRODUCTS_DIR; };
 		0AB6ACF016E0680B00A16D57 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		0AB6ACF216E0680B00A16D57 /* isolation.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = isolation.1; sourceTree = "<group>"; };
+		0AB6ACF916E0683300A16D57 /* board.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = board.cpp; sourceTree = "<group>"; };
+		0AB6ACFA16E0683300A16D57 /* board.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = board.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -62,6 +68,10 @@
 			children = (
 				0AB6ACF016E0680B00A16D57 /* main.cpp */,
 				0AB6ACF216E0680B00A16D57 /* isolation.1 */,
+				0AB6ACF916E0683300A16D57 /* board.cpp */,
+				0AB6ACFA16E0683300A16D57 /* board.h */,
+				0AAC326016E07049009B5979 /* point.cpp */,
+				0AAC326116E07049009B5979 /* point.h */,
 			);
 			path = isolation;
 			sourceTree = "<group>";
@@ -118,6 +128,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				0AB6ACF116E0680B00A16D57 /* main.cpp in Sources */,
+				0AB6ACFB16E0683300A16D57 /* board.cpp in Sources */,
+				0AAC326216E07049009B5979 /* point.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -216,6 +228,7 @@
 				0AB6ACF816E0680B00A16D57 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
