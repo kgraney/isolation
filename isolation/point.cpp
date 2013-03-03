@@ -8,6 +8,12 @@
 
 #include "point.h"
 
+Point::Point()
+: coord_(0,0)
+{
+    // initialize to (0,0)
+}
+
 Point::Point(int x, int y)
 : coord_(x,y)
 {

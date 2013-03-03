@@ -17,6 +17,7 @@ class Point
     typedef std::pair<int, int> Point_;
     
 public:
+    Point();
     Point(int x, int y);
     
     int x() const;
