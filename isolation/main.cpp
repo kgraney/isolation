@@ -17,9 +17,11 @@ int main(int argc, const char * argv[])
     std::cout << std::endl;
     
     Board b;
-    for (auto p : b.PointPerimeter(Point(1,2))) {
+    std::unique_ptr<Board::PointList> lst = b.PointPerimeter(Point(1,2));
+    for (auto p : *lst) {
         std::cout << "(" << p.x() << "," << p.y() << ")" << std::endl;
     }
+    lst.release();
     
     std::cout << b;
     

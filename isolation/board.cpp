@@ -6,9 +6,10 @@
 //  Copyright (c) 2013 Kevin Graney. All rights reserved.
 //
 
+#include <exception>
+
 #include "board.h"
 #include "point.h"
-#include <exception>
 
 Board::Board()
 : xloc_(0,0), oloc_(kSize-1,kSize-1)
@@ -52,14 +53,14 @@ bool Board::IsTerminalBoard()
     return true;
 }
 
-std::list<Point> Board::PointPerimeter(const Point p) const
+std::unique_ptr<Board::PointList> Board::PointPerimeter(const Point p) const
 {
-    std::list<Point> l;
+    std::unique_ptr<PointList> l(new PointList);
     for (int delta_x : {-1 , 0, 1}) {
         for (int delta_y : {-1, 0, 1}) {
             Point candidate = Point(p.x() + delta_x, p.y() + delta_y);
             if (OnBoard(candidate) && candidate != p) {
-                l.push_back(candidate);
+                l->push_back(candidate);
             }
         }
     }

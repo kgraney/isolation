@@ -11,6 +11,8 @@
 
 #include <ostream>
 #include <list>
+#include <memory>
+
 #include "point.h"
 
 class Point;
@@ -21,6 +23,8 @@ class Board
     static const int kSize = 9;
     
 public:
+    typedef std::list<Point> PointList;
+    
     Board();
 
     bool IsTerminalBoard();
@@ -31,7 +35,7 @@ public:
     
     // Returns a list of points surrounding the point p.  Does not include
     // points off the edge of the board.
-    std::list<Point> PointPerimeter(const Point p) const;
+    std::unique_ptr<PointList> PointPerimeter(const Point p) const;
     
 private:
     
