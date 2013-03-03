@@ -8,23 +8,38 @@
 
 #include "board.h"
 #include "point.h"
+#include <exception>
 
 Board::Board()
+: xloc_(0,0), oloc_(kSize-1,kSize-1)
 {
     for (int i=0; i < kSize; i++) {
         for (int j=0; j < kSize; j++) {
-            array_[i][j] = '-';
+            array_[i][j] = true;
         }
     }
-    array_[0][0] = 'x';
-    array_[kSize-1][kSize-1] = 'o';
+}
+
+bool Board::PointOpen(const Point& pt) const
+{
+    if (OnBoard(pt))
+        return array_[pt.x()][pt.y()];
+    else
+        throw std::out_of_range("Point not on the board");
 }
 
 std::ostream& operator<< (std::ostream& stream, const Board& board)
 {
     for (int i=0; i < Board::kSize; i++) {
         for (int j=0; j < Board::kSize; j++) {
-             stream << board.array_[i][j];
+            Point pt(i,j);
+            
+            if (pt == board.xloc_)
+                stream <<'x';
+            else if(pt == board.oloc_)
+                stream << 'o';
+            else
+                stream << (board.PointOpen(pt) ? '-' : '*');
         }
         stream << std::endl;
     }

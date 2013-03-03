@@ -11,6 +11,7 @@
 
 #include <ostream>
 #include <list>
+#include "point.h"
 
 class Point;
 
@@ -23,8 +24,10 @@ public:
     Board();
 
     bool IsTerminalBoard();
-    Point XLoc() const;
-    Point OLoc() const;
+    Point get_xloc() const;
+    Point get_yloc() const;
+    
+    bool PointOpen(const Point& pt) const;
     
     // Returns a list of points surrounding the point p.  Does not include
     // points off the edge of the board.
@@ -34,11 +37,12 @@ private:
     
     bool OnBoard(Point p) const;
     
-    // x => the position of the 'x' player
-    // o => the position of the 'o' player
-    // - => an available cell
-    // * => a filled cell
-    char array_[kSize][kSize];
+    // true if cell is available, false if it's blocked
+    bool array_[kSize][kSize];
+    
+    Point xloc_; // my location
+    Point oloc_; // my opponent's location
+
 };
 
 #endif /* defined(__isolation__board__) */
