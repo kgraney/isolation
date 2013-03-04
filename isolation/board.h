@@ -35,7 +35,8 @@ public:
     bool PointOpen(const Point& pt) const;
     
     // Returns a list of points surrounding the point p.  Does not include
-    // points off the edge of the board.
+    // points off the edge of the board or any points that are unreachable with
+    // a move.
     std::unique_ptr<PointList> PointPerimeter(const Point p) const;
     
 private:

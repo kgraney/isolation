@@ -55,11 +55,12 @@ bool Board::IsTerminalBoard()
 
 std::unique_ptr<Board::PointList> Board::PointPerimeter(const Point p) const
 {
+    // TODO: handle diagonal case properly
     std::unique_ptr<PointList> l(new PointList);
     for (int delta_x : {-1 , 0, 1}) {
         for (int delta_y : {-1, 0, 1}) {
             Point candidate = Point(p.x() + delta_x, p.y() + delta_y);
-            if (OnBoard(candidate) && candidate != p) {
+            if (OnBoard(candidate) && PointOpen(candidate) && candidate != p) {
                 l->push_back(candidate);
             }
         }
