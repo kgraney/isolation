@@ -11,6 +11,7 @@
 
 #include <ostream>
 #include <list>
+#include <set>
 #include <memory>
 
 #include "point.h"
@@ -24,10 +25,16 @@ class Board
     
 public:
     typedef std::list<Point> PointList;
+    typedef std::set<Point> PointSet;
     
     Board();
 
+    // returns true if one of the players has won the game
     bool IsTerminalBoard();
+    
+    // returns true if the players are divided by filled spaces and can't interact
+    // (at this point in the game we should try to not isolate ourselves)
+    bool IsIsolatedBoard();
     
     inline Point get_xloc() const { return xloc_; }
     inline Point get_oloc() const { return oloc_; }
@@ -49,6 +56,7 @@ private:
     Point xloc_; // my location
     Point oloc_; // my opponent's location
 
+    bool SearchForPath_(const Point& start, const Point& goal, PointSet*) const;
 };
 
 #endif /* defined(__isolation__board__) */

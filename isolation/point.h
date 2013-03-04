@@ -28,6 +28,8 @@ public:
     void set_x(int);
     void set_y(int);
     
+    double DistanceTo(const Point& p) const;
+    
 private:
     Point_ coord_; // first = x, second = y
 };
@@ -42,6 +44,16 @@ inline bool operator==(const Point& lhs, const Point& rhs)
 inline bool operator!=(const Point& lhs, const Point& rhs)
 {
     return !operator==(lhs, rhs);
+}
+
+inline bool operator<(const Point& lhs, const Point& rhs)
+{
+    // order by x then y (need for placement in std::set
+    // red-black tree)
+    if (lhs.x() == rhs.x())
+        return lhs.y() < rhs.y();
+    else
+        return lhs.x() < rhs.x();
 }
 
 

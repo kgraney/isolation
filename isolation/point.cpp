@@ -6,6 +6,8 @@
 //  Copyright (c) 2013 Kevin Graney. All rights reserved.
 //
 
+#include <cmath>
+
 #include "point.h"
 
 Point::Point()
@@ -27,6 +29,13 @@ void Point::set_x(int x)
 void Point::set_y(int y)
 {
     coord_.second = y;
+}
+
+double Point::DistanceTo(const Point& p) const
+{
+    int xdiff = x() - p.x();
+    int ydiff = y() - p.y();
+    return sqrt(xdiff*xdiff + ydiff*ydiff);
 }
 
 std::ostream& operator<< (std::ostream& stream, const Point& pt)
