@@ -35,9 +35,9 @@ std::ostream& operator<< (std::ostream& stream, const Board& board)
         for (int j=0; j < Board::kSize; j++) {
             Point pt(i,j);
             
-            if (pt == board.xloc_)
+            if (pt == board.get_xloc())
                 stream <<'x';
-            else if(pt == board.oloc_)
+            else if(pt == board.get_oloc())
                 stream << 'o';
             else
                 stream << (board.PointOpen(pt) ? '-' : '*');

@@ -15,13 +15,15 @@
 class Point
 {
     typedef std::pair<int, int> Point_;
+
+    friend std::ostream& operator<< (std::ostream&, const Point&);
     
 public:
     Point();
     Point(int x, int y);
     
-    int x() const;
-    int y() const;
+    inline int x() const { return coord_.first; }
+    inline int y() const { return coord_.second; }
     
     void set_x(int);
     void set_y(int);

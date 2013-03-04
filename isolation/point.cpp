@@ -19,9 +19,6 @@ Point::Point(int x, int y)
 {
 }
 
-int Point::x() const { return coord_.first; }
-int Point::y() const { return coord_.second; }
-
 void Point::set_x(int x)
 {
     coord_.first = x;
@@ -30,4 +27,10 @@ void Point::set_x(int x)
 void Point::set_y(int y)
 {
     coord_.second = y;
+}
+
+std::ostream& operator<< (std::ostream& stream, const Point& pt)
+{
+    stream << "(" << pt.x() << "," << pt.y() << ")";
+    return stream;
 }

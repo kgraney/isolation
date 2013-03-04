@@ -19,7 +19,7 @@ class Point;
 
 class Board
 {
-    friend std::ostream& operator<< (std::ostream& stream, const Board& board);
+    friend std::ostream& operator<< (std::ostream&, const Board&);
     static const int kSize = 9;
     
 public:
@@ -28,8 +28,9 @@ public:
     Board();
 
     bool IsTerminalBoard();
-    Point get_xloc() const;
-    Point get_yloc() const;
+    
+    inline Point get_xloc() const { return xloc_; }
+    inline Point get_oloc() const { return oloc_; }
     
     bool PointOpen(const Point& pt) const;
     
