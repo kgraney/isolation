@@ -21,6 +21,14 @@ Board::Board()
     }
 }
 
+void Board::set_loc_(const Point& pt, Point* loc)
+{
+    if (OnBoard(pt))
+        *loc = pt;
+    else
+        throw std::out_of_range("Point not on the board");
+}
+
 bool Board::PointOpen(const Point& pt) const
 {
     if (OnBoard(pt))

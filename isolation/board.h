@@ -39,6 +39,9 @@ public:
     inline Point get_xloc() const { return xloc_; }
     inline Point get_oloc() const { return oloc_; }
     
+    inline void set_xloc(const Point& pt) { set_loc_(pt, &xloc_); }
+    inline void set_oloc(const Point& pt) { set_loc_(pt, &oloc_); }
+    
     void ClosePoint(const Point& pt);
     
     bool PointOpen(const Point& pt) const;
@@ -51,6 +54,8 @@ public:
 private:
     
     bool OnBoard(const Point& p) const;
+    
+    void set_loc_(const Point& p, Point* loc);
     
     // true if cell is available, false if it's blocked
     bool array_[kSize][kSize];
