@@ -39,6 +39,8 @@ public:
     inline Point get_xloc() const { return xloc_; }
     inline Point get_oloc() const { return oloc_; }
     
+    void ClosePoint(const Point& pt);
+    
     bool PointOpen(const Point& pt) const;
     
     // Returns a list of points surrounding the point p.  Does not include

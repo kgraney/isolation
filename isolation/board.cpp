@@ -29,6 +29,14 @@ bool Board::PointOpen(const Point& pt) const
         throw std::out_of_range("Point not on the board");
 }
 
+void Board::ClosePoint(const Point& pt)
+{
+    if (OnBoard(pt))
+        array_[pt.x()][pt.y()] = false;
+    else
+        throw std::out_of_range("Point not on the board");
+}
+
 std::ostream& operator<< (std::ostream& stream, const Board& board)
 {
     for (int i=0; i < Board::kSize; i++) {
