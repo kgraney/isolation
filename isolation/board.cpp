@@ -68,7 +68,7 @@ std::unique_ptr<Board::PointList> Board::PointPerimeter(const Point p) const
     return l;
 }
 
-bool Board::OnBoard(Point p) const
+bool Board::OnBoard(const Point& p) const
 {
     return p.x() >= 0 && p.y() >= 0 && p.x() < kSize && p.y() < kSize;
 }

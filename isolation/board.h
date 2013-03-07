@@ -48,7 +48,7 @@ public:
     
 private:
     
-    bool OnBoard(Point p) const;
+    bool OnBoard(const Point& p) const;
     
     // true if cell is available, false if it's blocked
     bool array_[kSize][kSize];
