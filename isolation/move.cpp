@@ -20,9 +20,11 @@ void Move::ApplyToBoard(Board* b)
         case kPlayerX:
             b->ClosePoint(b->get_xloc());
             b->set_xloc(b->get_xloc() + pos_delta_);
+            break;
         case kPlayerO:
             b->ClosePoint(b->get_oloc());
             b->set_oloc(b->get_oloc() + pos_delta_);
+            break;
         default:
             throw std::invalid_argument("Bad player in ApplyToBoard");
     }
