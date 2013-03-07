@@ -75,11 +75,8 @@ bool Board::OnBoard(const Point& p) const
 
 bool Board::IsIsolatedBoard()
 {
-    // pick the x player to explore from, though it doesn't matter
-    Point start_pos = get_xloc();
-    
     PointSet* explored = new PointSet;
-    bool result = SearchForPath_(start_pos, get_oloc(), explored);
+    bool result = SearchForPath_(get_xloc(), get_oloc(), explored);
     delete explored;
     
     return !result;
