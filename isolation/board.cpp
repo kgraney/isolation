@@ -49,8 +49,8 @@ std::ostream& operator<< (std::ostream& stream, const Board& board)
 
 bool Board::IsTerminalBoard()
 {
-    // TODO
-    return true;
+    return (PointPerimeter(get_xloc())->size() == 0) ||
+            (PointPerimeter(get_oloc())->size() == 0);
 }
 
 std::unique_ptr<Board::PointList> Board::PointPerimeter(const Point p) const
