@@ -74,7 +74,7 @@ bool Board::IsTerminalBoard()
             (PointPerimeter(get_oloc())->size() == 0);
 }
 
-std::unique_ptr<Board::PointList> Board::PointPerimeter(const Point p) const
+std::unique_ptr<PointList> Board::PointPerimeter(const Point p) const
 {
     // TODO: handle diagonal case properly
     std::unique_ptr<PointList> l(new PointList);

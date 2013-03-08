@@ -12,16 +12,13 @@
 #include <iostream>
 
 #include "point.h"
+#include "types.h"
 
 class Board;
 
 class Move
 {
 public:
-    typedef enum {
-        kPlayerX,
-        kPlayerO
-    } Player;
     
     Move(int delta_x, int delta_y, Player p);
     

@@ -15,6 +15,7 @@
 #include <memory>
 
 #include "point.h"
+#include "types.h"
 
 class Point;
 
@@ -24,8 +25,6 @@ class Board
     static const int kSize = 9;
     
 public:
-    typedef std::list<Point> PointList;
-    typedef std::set<Point> PointSet;
     
     Board();
 
