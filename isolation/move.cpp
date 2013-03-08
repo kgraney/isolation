@@ -14,6 +14,11 @@ Move::Move(int delta_x, int delta_y, Player p)
 {
 }
 
+Move::Move(Point delta, Player p)
+: player_(p), pos_delta_(delta)
+{
+}
+
 void Move::ApplyToBoard(Board* b)
 {
     switch (player_) {

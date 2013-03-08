@@ -21,9 +21,12 @@ class Move
 public:
     
     Move(int delta_x, int delta_y, Player p);
+    Move(Point delta, Player pl);
     
     // Apply this move the give board, mutating it
     void ApplyToBoard(Board* b);
+    
+    const Point& get_pos_delta() const { return pos_delta_; }
 
 private:
     // Position delta, expressed as an (x,y) Point, from the current location.
