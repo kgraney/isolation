@@ -47,9 +47,9 @@ void Board::ClosePoint(const Point& pt)
 
 std::ostream& operator<< (std::ostream& stream, const Board& board)
 {
-    for (int i=0; i < Board::kSize; i++) {
-        for (int j=0; j < Board::kSize; j++) {
-            Point pt(i,j);
+    for (int y=0; y < Board::kSize; y++) {
+        for (int x=0; x < Board::kSize; x++) {
+            Point pt(x,y);
             
             if (pt == board.get_xloc())
                 stream <<'x';
