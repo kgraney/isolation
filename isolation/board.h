@@ -22,7 +22,9 @@ class Point;
 class Board
 {
     friend std::ostream& operator<< (std::ostream&, const Board&);
+    
     static const int kSize = 9;
+    static const std::initializer_list<Point> kPointDirections;
     
 public:
     
@@ -40,6 +42,8 @@ public:
     
     inline void set_xloc(const Point& pt) { set_loc_(pt, &xloc_); }
     inline void set_oloc(const Point& pt) { set_loc_(pt, &oloc_); }
+    
+    std::shared_ptr<PointList> OpenPoints(const Point& ref) const;
     
     void ClosePoint(const Point& pt);
     
@@ -63,6 +67,7 @@ private:
     Point oloc_; // my opponent's location
 
     bool SearchForPath_(const Point& start, const Point& goal, PointSet*) const;
+    void OpenPointSearch_(const Point& ref, Point direction, std::shared_ptr<PointList> lst) const;
 };
 
 #endif /* defined(__isolation__board__) */

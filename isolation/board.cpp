@@ -11,6 +11,13 @@
 #include "board.h"
 #include "point.h"
 
+const std::initializer_list<Point> Board::kPointDirections = {
+    Point(0,1), Point(1,0),
+    Point(-1,0), Point(0,-1),
+    Point(-1,1), Point(1,-1),
+    Point(1,1), Point(-1,-1)
+};
+
 Board::Board()
 : xloc_(0,0), oloc_(kSize-1,kSize-1)
 {
@@ -48,6 +55,31 @@ void Board::ClosePoint(const Point& pt)
         array_[pt.x()][pt.y()] = false;
     else
         throw std::out_of_range("Point not on the board");
+}
+
+std::shared_ptr<PointList> Board::OpenPoints(const Point& ref) const
+{
+    std::shared_ptr<PointList> l(new PointList);
+    OpenPointSearch_(ref, Point(0,0), l);
+    return l;
+}
+
+void Board::OpenPointSearch_(const Point& ref, Point direction, std::shared_ptr<PointList> lst) const
+{
+    if (!OnBoard(ref))
+        return;
+        
+    if (direction != Point(0,0)) {
+        if (PointOpen(ref)) {
+            lst->push_back(ref);
+            OpenPointSearch_(ref + direction, direction, lst);
+        } else
+            return;
+    } else {
+        for (auto dir : kPointDirections) {
+            OpenPointSearch_(ref + dir, dir, lst);
+        }
+    }
 }
 
 std::ostream& operator<< (std::ostream& stream, const Board& board)
