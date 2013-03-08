@@ -19,13 +19,18 @@ Board::Board()
             array_[i][j] = true;
         }
     }
+    
+    // Close the two starting points, which are directly initialized
+    ClosePoint(Point(0,0));
+    ClosePoint(Point(kSize-1, kSize-1));
 }
 
 void Board::set_loc_(const Point& pt, Point* loc)
 {
-    if (OnBoard(pt))
+    if (OnBoard(pt)) {
+        ClosePoint(pt);
         *loc = pt;
-    else
+    } else
         throw std::out_of_range("Point not on the board");
 }
 

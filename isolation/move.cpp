@@ -18,11 +18,9 @@ void Move::ApplyToBoard(Board* b)
 {
     switch (player_) {
         case kPlayerX:
-            b->ClosePoint(b->get_xloc());
             b->set_xloc(b->get_xloc() + pos_delta_);
             break;
         case kPlayerO:
-            b->ClosePoint(b->get_oloc());
             b->set_oloc(b->get_oloc() + pos_delta_);
             break;
         default:
