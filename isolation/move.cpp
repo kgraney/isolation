@@ -19,7 +19,7 @@ Move::Move(Point delta, Player p)
 {
 }
 
-void Move::ApplyToBoard(Board* b)
+void Move::ApplyToBoard(std::shared_ptr<Board> b)
 {
     switch (player_) {
         case kPlayerX:

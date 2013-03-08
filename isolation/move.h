@@ -24,7 +24,7 @@ public:
     Move(Point delta, Player pl);
     
     // Apply this move the give board, mutating it
-    void ApplyToBoard(Board* b);
+    void ApplyToBoard(std::shared_ptr<Board> b);
     
     const Point& get_pos_delta() const { return pos_delta_; }
 
