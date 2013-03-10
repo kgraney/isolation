@@ -31,11 +31,17 @@ typedef enum {
 
 std::ostream& operator<< (std::ostream& stream, const Player& player);
 
+typedef std::shared_ptr<Node> NodePtr;
+typedef std::shared_ptr<Board> BoardPtr;
+typedef std::shared_ptr<Move> MovePtr;
+
 typedef std::list<Point> PointList;
 typedef std::set<Point> PointSet;
 
 typedef std::list<Board> BoardList;
 typedef std::list<Move> MoveList;
 typedef std::list<Node> NodeList;
+
+typedef std::list<NodePtr> NodePtrList;
 
 #endif
