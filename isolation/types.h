@@ -15,6 +15,7 @@
 class Point;
 class Move;
 class Board;
+class Node;
 
 // kNoPlayer must be first so it evaluates to false
 #define kPlayerXMacro \
@@ -35,5 +36,6 @@ typedef std::set<Point> PointSet;
 
 typedef std::list<Board> BoardList;
 typedef std::list<Move> MoveList;
+typedef std::list<Node> NodeList;
 
 #endif
