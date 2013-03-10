@@ -12,13 +12,23 @@
 #include <list>
 #include <set>
 
+class Point;
 class Move;
 class Board;
 
+// kNoPlayer must be first so it evaluates to false
+#define kPlayerXMacro \
+    X(kNoPlayer, "ERROR") \
+    X(kPlayerX, "Player X") \
+    X(kPlayerO, "Player O")
+
+#define X(name, string) name,
 typedef enum {
-    kPlayerX,
-    kPlayerO
+    kPlayerXMacro
 } Player;
+#undef X
+
+std::ostream& operator<< (std::ostream& stream, const Player& player);
 
 typedef std::list<Point> PointList;
 typedef std::set<Point> PointSet;
