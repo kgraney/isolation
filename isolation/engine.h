@@ -12,6 +12,7 @@
 #include <iostream>
 #include <list>
 
+#include "types.h"
 #include "move.h"
 
 class Board;
@@ -30,20 +31,24 @@ public:
     
     const std::shared_ptr<Board> get_current_board() { return current_board_; }
     
-    Point MyPosition() { return GetPosition_(me_); }
-    Point OpponentsPosition() { return GetPosition_(opponent_); }
-    
-    std::unique_ptr<MoveList> MyMoves() {
-        return BoardMoves_(*current_board_, me_);
-    }
+    void TakeTurn();
     
 private:
     GameState FindGameState() const;
     
-    Point GetPosition_(Player player) const;
-    std::unique_ptr<MoveList> BoardMoves_(const Board& board, Player player) const;
+    
+    int Utility_(BoardPtr board) const;
+    
+    std::shared_ptr<NodePtrList> Successors_(Player player, std::shared_ptr<Node> node) const;
+    
+    int AlphaBeta(std::shared_ptr<Node> node);
+    int MaxValue(std::shared_ptr<Node> node, int alpha, int beta, int depth_counter);
+    int MinValue(std::shared_ptr<Node> node, int alpha, int beta, int depth_counter);
+    
+    //// Data
     
     std::shared_ptr<Board> current_board_;
+    std::shared_ptr<Node> current_node_;
     
     Player me_;
     Player opponent_;

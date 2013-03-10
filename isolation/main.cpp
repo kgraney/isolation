@@ -7,8 +7,8 @@
 //
 
 #include <iostream>
+#include "engine.h"
 #include "board.h"
-#include "point.h"
 
 int main(int argc, const char * argv[])
 {
@@ -16,14 +16,8 @@ int main(int argc, const char * argv[])
     std::cout << "Kevin M. Graney (kmg2165@columbia.edu)" << std::endl;
     std::cout << std::endl;
     
-    Board b;
-    std::unique_ptr<Board::PointList> lst = b.PointPerimeter(Point(1,2));
-    for (auto p : *lst) {
-        std::cout << "(" << p.x() << "," << p.y() << ")" << std::endl;
-    }
-    lst.release();
-    
-    std::cout << b;
+    Engine eng(kPlayerX);
+    eng.TakeTurn();
     
     return 0;
 }
