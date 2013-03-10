@@ -95,6 +95,7 @@ std::ostream& operator<< (std::ostream& stream, const Board& board)
                 stream << 'o';
             else
                 stream << (board.PointOpen(pt) ? '-' : '*');
+            stream << ' ';
         }
         stream << std::endl;
     }
