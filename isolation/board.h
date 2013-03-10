@@ -54,9 +54,14 @@ public:
     // a move.
     std::unique_ptr<PointList> PointPerimeter(const Point p) const;
     
+    // return a list of moves the given player can make on a board
+    std::unique_ptr<MoveList> Moves(Player player) const;
+    
 private:
     
     bool OnBoard(const Point& p) const;
+    
+    Point GetPosition_(Player player) const;
     
     void set_loc_(const Point& p, Point* loc);
     

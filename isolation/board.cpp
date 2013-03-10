@@ -10,6 +10,7 @@
 
 #include "board.h"
 #include "point.h"
+#include "move.h"
 
 const std::initializer_list<Point> Board::kPointDirections = {
     Point(0,1), Point(1,0),
@@ -171,4 +172,29 @@ bool Board::SearchForPath_(const Point& start, const Point& goal, PointSet* expl
         }
     }
     return b;
+}
+
+Point Board::GetPosition_(Player player) const
+{
+    switch (player) {
+        case kPlayerX:
+            return get_xloc();
+            break;
+        case kPlayerO:
+            return get_oloc();
+            break;
+        default:
+            throw std::invalid_argument("Bad player in GetPosition_");
+    }
+}
+
+std::unique_ptr<MoveList> Board::Moves(Player player) const
+{    
+    Point start = GetPosition_(player);
+    std::unique_ptr<MoveList> l(new MoveList());
+    std::shared_ptr<PointList> pl = OpenPoints(start);
+    for(auto &p : *pl) {
+        l->push_back(Move(p - start, player));
+    }
+    return l;
 }
