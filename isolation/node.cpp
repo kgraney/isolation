@@ -8,7 +8,7 @@
 
 #include "node.h"
 
-Node::Node(std::shared_ptr<Board> board, std::shared_ptr<Move> move, std::shared_ptr<Node> parent)
-: board_(board), parent_(parent), move_(move)
+Node::Node(std::shared_ptr<Board> board, std::shared_ptr<Node> parent)
+: board_(board), parent_(parent)
 {
 }

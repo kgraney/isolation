@@ -18,13 +18,14 @@ class Node
 {
 public:
     Node();
-    Node(std::shared_ptr<Board> board, std::shared_ptr<Move> move=nullptr, std::shared_ptr<Node> parent=nullptr);
-  
+    Node(std::shared_ptr<Board> board, std::shared_ptr<Node> parent=nullptr);
+    
+    const std::shared_ptr<Board> get_board() { return board_; }
+    
 private:
     
     std::shared_ptr<Board> board_;
     std::shared_ptr<Node> parent_;
-    std::shared_ptr<Move> move_;
 };
 
 #endif /* defined(__isolation__node__) */
