@@ -18,6 +18,8 @@ class Board;
 
 class Move
 {
+    friend std::ostream& operator<< (std::ostream&, const Move&);
+
 public:
     
     Move(int delta_x, int delta_y, Player p);

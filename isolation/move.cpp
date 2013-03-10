@@ -8,6 +8,9 @@
 
 #include "move.h"
 #include "board.h"
+#include "types.h"
+
+extern std::string kPlayerName[];
 
 Move::Move(int delta_x, int delta_y, Player p)
 : player_(p), pos_delta_(Point(delta_x, delta_y))
@@ -31,4 +34,11 @@ void Move::ApplyToBoard(std::shared_ptr<Board> b)
         default:
             throw std::invalid_argument("Bad player in ApplyToBoard");
     }
+}
+
+std::ostream& operator<< (std::ostream& stream, const Move& move)
+{
+    stream << "Move player " << kPlayerName[move.player_];
+    stream << " by " << move.get_pos_delta();
+    return stream;
 }
