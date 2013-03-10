@@ -30,8 +30,8 @@ public:
     
     Board();
 
-    // returns true if one of the players has won the game
-    bool IsTerminalBoard();
+    // returns the winning player or false if no player has won yet
+    Player IsTerminalBoard();
     
     // returns true if the players are divided by filled spaces and can't interact
     // (at this point in the game we should try to not isolate ourselves)

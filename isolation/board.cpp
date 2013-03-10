@@ -100,10 +100,20 @@ std::ostream& operator<< (std::ostream& stream, const Board& board)
     return stream;
 }
 
-bool Board::IsTerminalBoard()
+Player Board::IsTerminalBoard()
 {
-    return (PointPerimeter(get_xloc())->size() == 0) ||
-            (PointPerimeter(get_oloc())->size() == 0);
+    size_t x_moves = PointPerimeter(get_xloc())->size();
+    size_t o_moves = PointPerimeter(get_oloc())->size();
+    
+    if (x_moves == 0 && o_moves == 0) {
+        throw std::runtime_error("Tie game?");
+    } else if (x_moves == 0) {
+        return kPlayerO;
+    } else if (o_moves == 0) {
+        return kPlayerX;
+    } else {
+        return kNoPlayer;
+    }
 }
 
 std::unique_ptr<PointList> Board::PointPerimeter(const Point p) const
