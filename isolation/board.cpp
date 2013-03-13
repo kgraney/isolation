@@ -28,7 +28,8 @@ Board::Board()
         }
     }
     
-    // Close the two starting points, which are directly initialized
+    // Close the two starting points, which are directly initialized, and therefore not
+    // closed by set_loc_
     ClosePoint(Point(0,0));
     ClosePoint(Point(kSize-1, kSize-1));
 }
@@ -122,12 +123,10 @@ std::unique_ptr<PointList> Board::PointPerimeter(const Point p) const
 {
     // TODO: handle diagonal case properly
     std::unique_ptr<PointList> l(new PointList);
-    for (int delta_x : {-1 , 0, 1}) {
-        for (int delta_y : {-1, 0, 1}) {
-            Point candidate = Point(p.x() + delta_x, p.y() + delta_y);
-            if (OnBoard(candidate) && PointOpen(candidate) && candidate != p) {
-                l->push_back(candidate);
-            }
+    for (auto dir : kPointDirections) {
+        Point candidate = Point(p.x() + dir.x(), p.y() + dir.y());
+        if (OnBoard(candidate) && PointOpen(candidate) && candidate != p) {
+            l->push_back(candidate);
         }
     }
     return l;
