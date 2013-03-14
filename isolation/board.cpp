@@ -66,21 +66,53 @@ std::shared_ptr<PointList> Board::OpenPoints(const Point& ref) const
     return l;
 }
 
-void Board::OpenPointSearch_(const Point& ref, Point direction, std::shared_ptr<PointList> lst) const
+size_t Board::OpenPointSearch_(const Point& ref, Point direction, std::shared_ptr<PointList> lst) const
 {
     if (!OnBoard(ref))
-        return;
+        return 0;
         
     if (direction != Point(0,0)) {
         if (PointOpen(ref)) {
-            lst->push_back(ref);
-            OpenPointSearch_(ref + direction, direction, lst);
+            if (lst)
+                lst->push_back(ref);
+            return 1 + OpenPointSearch_(ref + direction, direction, lst);
         } else
-            return;
+            return 0;
     } else {
+        size_t r = 0;
         for (auto dir : kPointDirections) {
-            OpenPointSearch_(ref + dir, dir, lst);
+            if (dir.x() == dir.y()) // on a diagonal
+                try {
+                    if (!PointOpen(ref + Point(dir.x(),0)) && !PointOpen(ref + Point(0,dir.y())))
+                        continue;
+                } catch(std::out_of_range) { }
+            r += OpenPointSearch_(ref + dir, dir, lst);
         }
+        return r;
+    }
+}
+
+bool Board::IsPointBlocked(const Point& ref, Point direction) const
+{
+    if (!OnBoard(ref))
+        return true;
+    
+    if (direction != Point(0,0)) {
+        if (PointOpen(ref)) {
+            return false;
+        } else
+            return true;
+    } else {
+        bool blocked = true;
+        for (auto dir : kPointDirections) {
+            if (dir.x() == dir.y()) // on a diagonal
+                try {
+                    if (!PointOpen(ref + Point(dir.x(),0)) && !PointOpen(ref + Point(0,dir.y())))
+                        continue;
+                } catch(std::out_of_range) { }
+            blocked = blocked && IsPointBlocked(ref + dir, dir);
+        }
+        return blocked;
     }
 }
 
@@ -91,7 +123,7 @@ std::ostream& operator<< (std::ostream& stream, const Board& board)
             Point pt(x,y);
             
             if (pt == board.get_xloc())
-                stream <<'x';
+                stream << 'x';
             else if(pt == board.get_oloc())
                 stream << 'o';
             else
@@ -105,14 +137,14 @@ std::ostream& operator<< (std::ostream& stream, const Board& board)
 
 Player Board::IsTerminalBoard()
 {
-    size_t x_moves = PointPerimeter(get_xloc())->size();
-    size_t o_moves = PointPerimeter(get_oloc())->size();
+    bool x_blocked = IsPointBlocked(get_xloc());
+    bool o_blocked = IsPointBlocked(get_oloc());
     
-    if (x_moves == 0 && o_moves == 0) {
+    if (x_blocked && o_blocked) {
         throw std::runtime_error("Tie game?");
-    } else if (x_moves == 0) {
+    } else if (x_blocked) {
         return kPlayerO;
-    } else if (o_moves == 0) {
+    } else if (o_blocked) {
         return kPlayerX;
     } else {
         return kNoPlayer;
@@ -124,7 +156,7 @@ std::unique_ptr<PointList> Board::PointPerimeter(const Point p) const
     // TODO: handle diagonal case properly
     std::unique_ptr<PointList> l(new PointList);
     for (auto dir : kPointDirections) {
-        Point candidate = Point(p.x() + dir.x(), p.y() + dir.y());
+        Point candidate = p + dir;
         if (OnBoard(candidate) && PointOpen(candidate) && candidate != p) {
             l->push_back(candidate);
         }
@@ -198,3 +230,9 @@ std::unique_ptr<MoveList> Board::Moves(Player player) const
     }
     return l;
 }
+
+size_t Board::NumMoves(const Player& player) const
+{
+    return OpenPointSearch_(GetPosition_(player));
+}
+

@@ -54,8 +54,11 @@ public:
     // a move.
     std::unique_ptr<PointList> PointPerimeter(const Point p) const;
     
+    bool IsPointBlocked(const Point& ref, Point direction = Point(0,0)) const;
+    
     // return a list of moves the given player can make on a board
     std::unique_ptr<MoveList> Moves(Player player) const;
+    size_t NumMoves(const Player& player) const;
     
 private:
     
@@ -72,7 +75,7 @@ private:
     Point oloc_; // my opponent's location
 
     bool SearchForPath_(const Point& start, const Point& goal, PointSet*) const;
-    void OpenPointSearch_(const Point& ref, Point direction, std::shared_ptr<PointList> lst) const;
+    size_t OpenPointSearch_(const Point& ref, Point direction = Point(0,0), std::shared_ptr<PointList> lst = nullptr) const;
 };
 
 #endif /* defined(__isolation__board__) */
