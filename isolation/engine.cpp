@@ -89,11 +89,10 @@ void Engine::TakeTurn()
             break;
         }
         
-        /* here, do your time-consuming job */
         end = clock();
         time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
         
-        std::cout << "board = " << i << " time = " << time_spent << " utility = " << best_value << std::endl;
+        std::cout << me_ << " board = " << i << " time = " << time_spent << " utility = " << best_value << std::endl;
         std::cout << *best_node->get_board() << std::endl;
          
         current_board_ = best_node->get_board();
@@ -120,6 +119,7 @@ int Engine::MaxValue(std::shared_ptr<Node> node, int alpha, int beta, int depth_
     lst->sort([this] (NodePtr a, NodePtr b) {
         return this->Utility_(a->get_board()) > this->Utility_(b->get_board());
     });
+
     for (auto child : *lst) {
         //std::cout << "MAX v=" << v << " a=" << alpha << " b=" << beta << std::endl;
         v = std::max(v, MinValue(child, alpha, beta, depth_counter - 1));
@@ -142,10 +142,10 @@ int Engine::MinValue(std::shared_ptr<Node> node, int alpha, int beta, int depth_
     int v = INT32_MAX;
     std::shared_ptr<NodePtrList> lst = Successors_(opponent_, node);
     lst->sort([this] (NodePtr a, NodePtr b) {
-        return this->Utility_(a->get_board()) > this->Utility_(b->get_board());
+        return this->Utility_(a->get_board()) < this->Utility_(b->get_board());
     });
+
     for (auto child : *lst) {
-        //std::cout << "MIN v=" << v << " a=" << alpha << " b=" << beta << std::endl;
         v = std::min(v, MaxValue(child, alpha, beta, depth_counter - 1));
         if (v <= alpha) {
             node->set_value(v);
@@ -158,7 +158,8 @@ int Engine::MinValue(std::shared_ptr<Node> node, int alpha, int beta, int depth_
 }
 
 
-int Engine::Utility_(BoardPtr board) const
+size_t Engine::Utility_(BoardPtr board) const
 {
-    return board->Moves(me_)->size() - board->Moves(opponent_)->size();
+    return board->NumMoves(me_) - board->NumMoves(opponent_);
+    //return board->Moves(me_)->size() - board->Moves(opponent_)->size();
 }

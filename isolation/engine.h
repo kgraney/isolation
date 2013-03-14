@@ -37,7 +37,7 @@ private:
     GameState FindGameState() const;
     
     
-    int Utility_(BoardPtr board) const;
+    size_t Utility_(BoardPtr board) const;
     
     std::shared_ptr<NodePtrList> Successors_(Player player, std::shared_ptr<Node> node) const;
     
