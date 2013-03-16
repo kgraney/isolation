@@ -56,7 +56,8 @@ bool Board::PointOpen(const Point& pt) const
     if (OnBoard(pt))
         return array_[pt.x()][pt.y()];
     else
-        throw std::out_of_range("Point not on the board");
+        //throw std::out_of_range("Point not on the board");
+        return false;
 }
 
 void Board::ClosePoint(const Point& pt)
@@ -90,10 +91,8 @@ size_t Board::OpenPointSearch_(const Point& ref, Point direction, std::shared_pt
         size_t r = 0;
         for (auto dir : kPointDirections) {
             if (dir.x() == dir.y()) // on a diagonal
-                try {
-                    if (!PointOpen(ref + Point(dir.x(),0)) && !PointOpen(ref + Point(0,dir.y())))
-                        continue;
-                } catch(std::out_of_range) { }
+                if (!PointOpen(ref + Point(dir.x(),0)) && !PointOpen(ref + Point(0,dir.y())))
+                    continue;
             r += OpenPointSearch_(ref + dir, dir, lst);
         }
         return r;
@@ -114,10 +113,8 @@ bool Board::IsPointBlocked(const Point& ref, Point direction) const
         bool blocked = true;
         for (auto dir : kPointDirections) {
             if (dir.x() == dir.y()) // on a diagonal
-                try {
-                    if (!PointOpen(ref + Point(dir.x(),0)) && !PointOpen(ref + Point(0,dir.y())))
-                        continue;
-                } catch(std::out_of_range) { }
+                if (!PointOpen(ref + Point(dir.x(),0)) && !PointOpen(ref + Point(0,dir.y())))
+                    continue;
             blocked = blocked && IsPointBlocked(ref + dir, dir);
         }
         return blocked;
