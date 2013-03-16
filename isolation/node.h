@@ -19,11 +19,14 @@ class Node
 public:
     Node();
     Node(std::shared_ptr<Board> board, std::shared_ptr<Node> parent=nullptr);
+    Node(Node& node);
     
     const std::shared_ptr<Board> get_board() { return board_; }
     
     int get_value() { return value_; }
     void set_value(int v) { value_ = v; }
+    
+    NodePtr get_parent() { return parent_; }
     
 private:
     

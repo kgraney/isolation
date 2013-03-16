@@ -12,3 +12,8 @@ Node::Node(std::shared_ptr<Board> board, std::shared_ptr<Node> parent)
 : board_(board), parent_(parent)
 {
 }
+
+Node::Node(Node& node)
+: board_(node.board_), parent_(node.parent_), value_(node.value_)
+{
+}
