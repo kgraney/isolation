@@ -19,7 +19,8 @@ class Node;
 
 // kNoPlayer must be first so it evaluates to false
 #define kPlayerXMacro \
-    X(kNoPlayer, "ERROR") \
+    X(kNoPlayer, "ERROR - None") \
+    X(kAllPlayers, "ERROR - All") \
     X(kPlayerX, "Player X") \
     X(kPlayerO, "Player O")
 

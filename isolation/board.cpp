@@ -149,7 +149,8 @@ Player Board::IsTerminalBoard()
     bool o_blocked = IsPointBlocked(get_oloc());
     
     if (x_blocked && o_blocked) {
-        throw std::runtime_error("Tie game?");
+        //throw std::runtime_error("Tie game?");
+        return kAllPlayers;
     } else if (x_blocked) {
         return kPlayerO;
     } else if (o_blocked) {
