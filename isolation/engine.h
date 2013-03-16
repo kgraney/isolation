@@ -41,9 +41,9 @@ private:
     
     std::shared_ptr<NodePtrList> Successors_(Player player, std::shared_ptr<Node> node) const;
     
-    int AlphaBeta(std::shared_ptr<Node> node);
-    int MaxValue(std::shared_ptr<Node> node, int alpha, int beta, int depth_counter);
-    int MinValue(std::shared_ptr<Node> node, int alpha, int beta, int depth_counter);
+    NodePtr AlphaBeta(std::shared_ptr<Node> node);
+    NodePtr MaxValue(std::shared_ptr<Node> node, int alpha, int beta, int depth_counter);
+    NodePtr MinValue(std::shared_ptr<Node> node, int alpha, int beta, int depth_counter);
     
     //// Data
     

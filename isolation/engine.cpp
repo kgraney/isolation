@@ -12,6 +12,11 @@
 #include "board.h"
 #include "node.h"
 
+bool CompareNodeValues(const NodePtr& a, const NodePtr& b)
+{
+    return a->get_value() < b->get_value();
+}
+
 Engine::Engine(Player me)
 : me_(me), current_board_(new Board()), current_node_(new Node(current_board_))
 {
@@ -57,7 +62,7 @@ void Engine::TakeTurn()
     double time_spent;
 
     
-    for(int i=0; i < 100; i++) {
+    for(int i=0; i < 1000; i++) {
         
         begin = clock();
         
@@ -67,21 +72,11 @@ void Engine::TakeTurn()
             break;
         }
         
-        std::shared_ptr<NodePtrList> lst = Successors_(me_, NodePtr(new Node(current_board_)));
-        lst->sort([this] (NodePtr a, NodePtr b) {
-            return this->Utility_(a->get_board()) > this->Utility_(b->get_board());
-        });
+        BoardPtr new_board(new Board(*current_board_));
+        NodePtr new_node(new Node(new_board));
         
-        NodePtr best_node = lst->front();
-        int best_value = INT32_MIN;
-        for (auto node : *lst) {
-            //std::cout << *node->get_board() << std::endl;
-            int value = AlphaBeta(node);
-            if (value > best_value) {
-                best_node = node;
-                best_value = value;
-            }
-        }
+        NodePtr best_node = AlphaBeta(new_node);
+        int best_value = best_node->get_value();
         
         if (!best_node) {
             Player winner = current_board_->IsTerminalBoard();
@@ -94,72 +89,80 @@ void Engine::TakeTurn()
         
         std::cout << me_ << " board = " << i << " time = " << time_spent << " utility = " << best_value << std::endl;
         std::cout << *best_node->get_board() << std::endl;
-         
+
         current_board_ = best_node->get_board();
         std::swap(opponent_, me_);
     }
 }
 
-int Engine::AlphaBeta(std::shared_ptr<Node> node)
+NodePtr Engine::AlphaBeta(std::shared_ptr<Node> node)
 {
-    int v = MaxValue(node, INT32_MIN, INT32_MAX, 3);  // ENSURE EVEN/ODD DEPTH CORRECT!
-    //std::cout << v << std::endl;
-    //std::cout << *node->get_board();
-    return v; // TODO
+    int depth;
+    if (me_ == kPlayerX)
+        depth = 4;
+    else
+        depth = 2;
+    NodePtr best = MaxValue(node, INT32_MIN, INT32_MAX, depth);  // ENSURE EVEN/ODD DEPTH CORRECT!;
+    NodePtr next = best;
+    while (next->get_parent() != node)
+        next = next->get_parent();
+    return next;
 }
 
-int Engine::MaxValue(std::shared_ptr<Node> node, int alpha, int beta, int depth_counter)
+NodePtr Engine::MaxValue(std::shared_ptr<Node> node, int alpha, int beta, int depth_counter)
 {
-    //if (node->get_board()->IsTerminalBoard())
-    if (depth_counter == 0)
-        return Utility_(node->get_board());
-    
-    int v = INT32_MIN;
+    if (depth_counter == 0 || node->get_board()->IsTerminalBoard()) {
+        node->set_value(Utility_(node->get_board()));
+        return node;
+    }
+
+    NodePtr v = NodePtr(new Node(nullptr));
+    v->set_value(INT32_MIN);
     std::shared_ptr<NodePtrList> lst = Successors_(me_, node);
     lst->sort([this] (NodePtr a, NodePtr b) {
         return this->Utility_(a->get_board()) > this->Utility_(b->get_board());
     });
 
     for (auto child : *lst) {
-        //std::cout << "MAX v=" << v << " a=" << alpha << " b=" << beta << std::endl;
-        v = std::max(v, MinValue(child, alpha, beta, depth_counter - 1));
-        if (v >= beta) {
-            node->set_value(v);
+        v = std::max(v, MinValue(child, alpha, beta, depth_counter - 1), &CompareNodeValues);
+        if (v->get_value() >= beta) {
             return v;
         }
-        alpha = std::max(alpha, v);
+        alpha = std::max(alpha, v->get_value());
     }
-    node->set_value(v);
+
     return v;
 }
 
-int Engine::MinValue(std::shared_ptr<Node> node, int alpha, int beta, int depth_counter)
+NodePtr Engine::MinValue(std::shared_ptr<Node> node, int alpha, int beta, int depth_counter)
 {
-    //if (node->get_board()->IsTerminalBoard())
-    if (depth_counter == 0)
-        return Utility_(node->get_board());
+    if (depth_counter == 0 || node->get_board()->IsTerminalBoard()) {
+        node->set_value(Utility_(node->get_board()));
+        return node;
+    }
     
-    int v = INT32_MAX;
+    NodePtr v = NodePtr(new Node(nullptr));
+    v->set_value(INT32_MAX);
+
     std::shared_ptr<NodePtrList> lst = Successors_(opponent_, node);
     lst->sort([this] (NodePtr a, NodePtr b) {
         return this->Utility_(a->get_board()) < this->Utility_(b->get_board());
     });
 
     for (auto child : *lst) {
-        v = std::min(v, MaxValue(child, alpha, beta, depth_counter - 1));
-        if (v <= alpha) {
-            node->set_value(v);
+        v = std::min(v, MaxValue(child, alpha, beta, depth_counter - 1), &CompareNodeValues);
+        if (v->get_value() <= alpha) {
             return v;
         }
-        beta = std::min(beta, v);
+        beta = std::min(beta, v->get_value());
     }
-    node->set_value(v);
+    
     return v;
 }
 
 
 size_t Engine::Utility_(BoardPtr board) const
 {
-    return board->NumMoves(me_) - board->NumMoves(opponent_);
+    return 2*board->NumMoves(me_) - board->NumMoves(opponent_);
     //return board->Moves(me_)->size() - board->Moves(opponent_)->size();
 }
