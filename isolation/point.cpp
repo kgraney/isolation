@@ -50,11 +50,11 @@ std::istream& operator>> (std::istream& stream, Point& pt)
     
     std::cout << "x? ";
     stream >> x;
-    pt.set_x(x);
+    pt.set_x(x-1);
     
     std::cout << "y? ";
     stream >> y;
-    pt.set_y(y);
+    pt.set_y(y-1);
     
     return stream;
 }

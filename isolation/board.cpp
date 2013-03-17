@@ -146,11 +146,11 @@ std::ostream& operator<< (std::ostream& stream, const Board& board)
 {
     stream << "  ";
     for (int x=0; x < Board::kSize; x++)
-        stream << x << " ";
+        stream << 1+x << " ";
     stream << std::endl;
     
     for (int y=0; y < Board::kSize; y++) {
-        stream << y << " ";
+        stream << 1+y << " ";
         for (int x=0; x < Board::kSize; x++) {
             Point pt(x,y);
             
