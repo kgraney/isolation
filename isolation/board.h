@@ -23,7 +23,7 @@ class Board
 {
     friend std::ostream& operator<< (std::ostream&, const Board&);
     
-    static const int kSize = 9;
+    static const int kSize = 8;
     static const std::initializer_list<Point> kPointDirections;
     
 public:
