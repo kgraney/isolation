@@ -17,7 +17,7 @@ int main(int argc, const char * argv[])
     std::cout << std::endl;
     
     Engine eng(kPlayerX);
-    eng.TakeTurn();
+    eng.PlayGame(true);
     
     return 0;
 }

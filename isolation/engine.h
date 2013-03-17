@@ -31,9 +31,12 @@ public:
     
     const std::shared_ptr<Board> get_current_board() { return current_board_; }
     
-    void TakeTurn();
+    void PlayGame(bool autoplay);
     
 private:
+    void TakeAITurn_(Player player);
+    void TakeMeatTurn_(Player player);
+    
     GameState FindGameState() const;
     
     

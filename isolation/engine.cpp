@@ -63,7 +63,7 @@ std::shared_ptr<NodePtrVec> Engine::Successors_(Player player, std::shared_ptr<N
     return node->get_board()->Successors(player, node);
 }
 
-void Engine::TakeTurn()
+void Engine::PlayGame(bool autoplay)
 {
     std::cout << "Entering board:" << std::endl;
     std::cout << *(get_current_board()) << std::endl;
@@ -75,37 +75,54 @@ void Engine::TakeTurn()
     
     for(int i=0; i < 1000; i++) {
         
-        begin = clock();
-        
+        // Check if someone has won yet
         Player winner = current_board_->IsTerminalBoard();
         if (winner) {
             std::cout << "End of game " << winner << " wins." << std::endl;
             break;
         }
-    
-        BoardPtr new_board(new Board(*current_board_));
-        NodePtr new_node(new Node(new_board));
         
-        NodePtr best_node = AlphaBeta(new_node, 4);
-        int best_value = best_node->get_value();
-        
-        if (!best_node) {
-            Player winner = current_board_->IsTerminalBoard();
-            std::cout << "End of game " << winner << " wins." << std::endl;
-            break;
-        }
-        
+        begin = clock();
+        //if(me_ == kPlayerX) {
+        TakeMeatTurn_(me_);
         end = clock();
         time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
         
-        std::cout << me_ << " board = " << i << " time = " << time_spent << " utility = " << best_value << std::endl;
-        std::cout << *best_node->get_board() << std::endl;
-        BoardPtr next_board = best_node->get_board();
+        std::cout << me_ << " (play " << i << ", time " << time_spent << ",)" << std::endl;
+        std::cout << std::endl;
+        std::cout << *current_board_;
 
         std::cout << "----------------- SWITCH TURNS -----------------" << std::endl;
-        current_board_ = next_board;
         std::swap(opponent_, me_);
     }
+}
+
+void Engine::TakeAITurn_(Player player)
+{
+
+    BoardPtr new_board(new Board(*current_board_));
+    NodePtr new_node(new Node(new_board));
+    
+    NodePtr best_node = AlphaBeta(new_node, 4);
+    int best_value = best_node->get_value();
+    std::cout << "AI: move with utility " << best_value << std::endl;
+    
+    if (!best_node) {
+        Player winner = current_board_->IsTerminalBoard();
+        std::cout << "!!! End of game " << winner << " wins." << std::endl;
+    }
+    
+    current_board_ = best_node->get_board();;
+}
+
+void Engine::TakeMeatTurn_(Player player)
+{
+    Point new_loc;
+    std::cout << "Enter coordinates " << player << " will move to." << std::endl;
+    std::cin >> new_loc;
+    
+    Move move(new_loc - current_board_->GetPosition(player), player);
+    move.ApplyToBoard(current_board_);
 }
 
 NodePtr Engine::AlphaBeta(std::shared_ptr<Node> node, int depth)
