@@ -23,9 +23,9 @@ const std::initializer_list<Point> Board::kPointDirections = {
 Board::Board()
 : xloc_(0,0), oloc_(kSize-1,kSize-1)
 {
-    for (int i=0; i < kSize; i++) {
-        for (int j=0; j < kSize; j++) {
-            array_[i][j] = true;
+    for (int x=0; x < kSize; x++) {
+        for (int y=0; y < kSize; y++) {
+            array_[x][y] = true;
         }
     }
     
@@ -38,9 +38,9 @@ Board::Board()
 Board::Board(const Board& board)
 : xloc_(board.xloc_), oloc_(board.oloc_)
 {
-    for (int i=0; i < kSize; i++)
-        for (int j=0; j < kSize; j++)
-            array_[i][j] = board.array_[i][j];
+    for (int x=0; x < kSize; x++)
+        for (int y=0; y < kSize; y++)
+            array_[x][y] = board.array_[x][y];
 }
 
 void Board::set_loc_(const Point& pt, Point* loc)
