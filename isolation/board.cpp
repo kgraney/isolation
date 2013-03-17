@@ -219,7 +219,7 @@ bool Board::SearchForPath_(const Point& start, const Point& goal, PointSet* expl
     return b;
 }
 
-Point Board::GetPosition_(Player player) const
+Point Board::GetPosition(Player player) const
 {
     switch (player) {
         case kPlayerX:
@@ -229,13 +229,13 @@ Point Board::GetPosition_(Player player) const
             return get_oloc();
             break;
         default:
-            throw std::invalid_argument("Bad player in GetPosition_");
+            throw std::invalid_argument("Bad player in GetPosition");
     }
 }
 
 std::unique_ptr<NodePtrVec> Board::Successors(Player player, NodePtr node) const
 {    
-    Point start = GetPosition_(player);
+    Point start = GetPosition(player);
     std::unique_ptr<NodePtrVec> nodes(new NodePtrVec());
 
     std::shared_ptr<PointVec> pl = OpenPoints(start);
@@ -253,6 +253,6 @@ std::unique_ptr<NodePtrVec> Board::Successors(Player player, NodePtr node) const
 
 size_t Board::NumMoves(const Player& player) const
 {
-    return OpenPointSearch_(GetPosition_(player));
+    return OpenPointSearch_(GetPosition(player));
 }
 

@@ -40,6 +40,7 @@ public:
     
     inline Point get_xloc() const { return xloc_; }
     inline Point get_oloc() const { return oloc_; }
+    Point GetPosition(Player player) const;
     
     inline void set_xloc(const Point& pt) { set_loc_(pt, &xloc_); }
     inline void set_oloc(const Point& pt) { set_loc_(pt, &oloc_); }
@@ -64,8 +65,6 @@ public:
 private:
     
     bool OnBoard(const Point& p) const;
-    
-    Point GetPosition_(Player player) const;
     
     void set_loc_(const Point& p, Point* loc);
     
