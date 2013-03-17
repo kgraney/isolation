@@ -82,13 +82,26 @@ size_t Board::OpenPointSearch_(const Point& ref, Point direction, std::shared_pt
         return 0;
         
     if (direction != Point(0,0)) {
+        // for subsequent movements, continue on in the same direction
+
         if (PointOpen(ref)) {
+            if (direction.x() == direction.y()) {
+                if(PointOpen(ref + Point(direction.x(),0)) || PointOpen(ref + Point(0,direction.y()))) {
+                   if (lst)
+                       lst->push_back(ref);
+                   return 1 + OpenPointSearch_(ref + direction, direction, lst);
+                }
+                return 0;
+            }
+
             if (lst)
                 lst->push_back(ref);
             return 1 + OpenPointSearch_(ref + direction, direction, lst);
         } else
             return 0;
+
     } else {
+        // for the first movement, try each direction
         size_t r = 0;
         for (auto dir : kPointDirections) {
             if (dir.x() == dir.y()) // on a diagonal
@@ -107,6 +120,13 @@ bool Board::IsPointBlocked(const Point& ref, Point direction) const
     
     if (direction != Point(0,0)) {
         if (PointOpen(ref)) {
+            if (direction.x() == direction.y()) {
+                if (PointOpen(ref + Point(direction.x(),0))
+                    || PointOpen(ref + Point(0,direction.y())))
+                   return false;
+                return true;
+            }
+
             return false;
         } else
             return true;
