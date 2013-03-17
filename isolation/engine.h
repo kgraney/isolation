@@ -42,7 +42,7 @@ private:
     
     std::shared_ptr<NodePtrVec> Successors_(Player player, std::shared_ptr<Node> node) const;
     
-    NodePtr AlphaBeta(std::shared_ptr<Node> node);
+    NodePtr AlphaBeta(std::shared_ptr<Node> node, int depth);
     NodePtr MaxValue(std::shared_ptr<Node> node, int alpha, int beta, int depth_counter);
     NodePtr MinValue(std::shared_ptr<Node> node, int alpha, int beta, int depth_counter);
     

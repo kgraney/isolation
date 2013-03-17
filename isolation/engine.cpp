@@ -82,11 +82,11 @@ void Engine::TakeTurn()
             std::cout << "End of game " << winner << " wins." << std::endl;
             break;
         }
-        
+    
         BoardPtr new_board(new Board(*current_board_));
         NodePtr new_node(new Node(new_board));
         
-        NodePtr best_node = AlphaBeta(new_node);
+        NodePtr best_node = AlphaBeta(new_node, 4);
         int best_value = best_node->get_value();
         
         if (!best_node) {
@@ -100,19 +100,16 @@ void Engine::TakeTurn()
         
         std::cout << me_ << " board = " << i << " time = " << time_spent << " utility = " << best_value << std::endl;
         std::cout << *best_node->get_board() << std::endl;
+        BoardPtr next_board = best_node->get_board();
 
-        current_board_ = best_node->get_board();
+        std::cout << "----------------- SWITCH TURNS -----------------" << std::endl;
+        current_board_ = next_board;
         std::swap(opponent_, me_);
     }
 }
 
-NodePtr Engine::AlphaBeta(std::shared_ptr<Node> node)
+NodePtr Engine::AlphaBeta(std::shared_ptr<Node> node, int depth)
 {
-    int depth;
-    if (me_ == kPlayerX)
-        depth = 4;
-    else
-        depth = 2;
     NodePtr best = MaxValue(node, INT32_MIN, INT32_MAX, depth);  // ENSURE EVEN/ODD DEPTH CORRECT!;
     NodePtr next = best;
     while (next->get_parent() != node)
