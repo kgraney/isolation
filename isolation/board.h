@@ -29,7 +29,7 @@ class Board
 public:
     
     Board();
-    Board(Board& board);
+    Board(const Board& board);
 
     // returns the winning player or false if no player has won yet
     Player IsTerminalBoard();

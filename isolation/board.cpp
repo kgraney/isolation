@@ -34,7 +34,7 @@ Board::Board()
     ClosePoint(Point(kSize-1, kSize-1));
 }
 
-Board::Board(Board& board)
+Board::Board(const Board& board)
 : xloc_(board.xloc_), oloc_(board.oloc_)
 {
     for (int i=0; i < kSize; i++)
