@@ -17,6 +17,7 @@ class Point
     typedef std::pair<int, int> Point_;
 
     friend std::ostream& operator<< (std::ostream&, const Point&);
+    friend std::istream& operator>> (std::istream&, Point&);
     
 public:
     Point();

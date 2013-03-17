@@ -43,3 +43,18 @@ std::ostream& operator<< (std::ostream& stream, const Point& pt)
     stream << "(" << pt.x() << "," << pt.y() << ")";
     return stream;
 }
+
+std::istream& operator>> (std::istream& stream, Point& pt)
+{
+    int x, y;
+    
+    std::cout << "x? ";
+    stream >> x;
+    pt.set_x(x);
+    
+    std::cout << "y? ";
+    stream >> y;
+    pt.set_y(y);
+    
+    return stream;
+}
