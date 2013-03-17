@@ -11,6 +11,7 @@
 #include "board.h"
 #include "point.h"
 #include "move.h"
+#include "node.h"
 
 const std::initializer_list<Point> Board::kPointDirections = {
     Point(0,1), Point(1,0),
@@ -68,14 +69,14 @@ void Board::ClosePoint(const Point& pt)
         throw std::out_of_range("Point not on the board");
 }
 
-std::shared_ptr<PointList> Board::OpenPoints(const Point& ref) const
+std::shared_ptr<PointVec> Board::OpenPoints(const Point& ref) const
 {
-    std::shared_ptr<PointList> l(new PointList);
+    std::shared_ptr<PointVec> l(new PointVec);
     OpenPointSearch_(ref, Point(0,0), l);
     return l;
 }
 
-size_t Board::OpenPointSearch_(const Point& ref, Point direction, std::shared_ptr<PointList> lst) const
+size_t Board::OpenPointSearch_(const Point& ref, Point direction, std::shared_ptr<PointVec> lst) const
 {
     if (!OnBoard(ref))
         return 0;
@@ -226,15 +227,22 @@ Point Board::GetPosition_(Player player) const
     }
 }
 
-std::unique_ptr<MoveList> Board::Moves(Player player) const
+std::unique_ptr<NodePtrVec> Board::Successors(Player player, NodePtr node) const
 {    
     Point start = GetPosition_(player);
-    std::unique_ptr<MoveList> l(new MoveList());
-    std::shared_ptr<PointList> pl = OpenPoints(start);
+    std::unique_ptr<NodePtrVec> nodes(new NodePtrVec());
+
+    std::shared_ptr<PointVec> pl = OpenPoints(start);
     for(auto &p : *pl) {
-        l->push_back(Move(p - start, player));
+        Move move = Move(p - start, player);
+        
+        BoardPtr new_board(new Board(*this));
+        move.ApplyToBoard(new_board);
+        
+        NodePtr new_node(new Node(new_board, node));
+        nodes->push_back(new_node);
     }
-    return l;
+    return nodes;
 }
 
 size_t Board::NumMoves(const Player& player) const

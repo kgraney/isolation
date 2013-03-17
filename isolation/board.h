@@ -44,7 +44,7 @@ public:
     inline void set_xloc(const Point& pt) { set_loc_(pt, &xloc_); }
     inline void set_oloc(const Point& pt) { set_loc_(pt, &oloc_); }
     
-    std::shared_ptr<PointList> OpenPoints(const Point& ref) const;
+    std::shared_ptr<PointVec> OpenPoints(const Point& ref) const;
     
     void ClosePoint(const Point& pt);
     
@@ -58,7 +58,7 @@ public:
     bool IsPointBlocked(const Point& ref, Point direction = Point(0,0)) const;
     
     // return a list of moves the given player can make on a board
-    std::unique_ptr<MoveList> Moves(Player player) const;
+    std::unique_ptr<NodePtrVec> Successors(Player player, NodePtr node) const;
     size_t NumMoves(const Player& player) const;
     
 private:
@@ -76,7 +76,7 @@ private:
     Point oloc_; // my opponent's location
 
     bool SearchForPath_(const Point& start, const Point& goal, PointSet*) const;
-    size_t OpenPointSearch_(const Point& ref, Point direction = Point(0,0), std::shared_ptr<PointList> lst = nullptr) const;
+    size_t OpenPointSearch_(const Point& ref, Point direction = Point(0,0), std::shared_ptr<PointVec> lst = nullptr) const;
 };
 
 #endif /* defined(__isolation__board__) */

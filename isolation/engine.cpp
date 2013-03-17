@@ -7,14 +7,22 @@
 //
 
 #include <time.h>
+#include <functional>
 
 #include "engine.h"
 #include "board.h"
 #include "node.h"
 
+using namespace std::placeholders;
+
 bool CompareNodeValues(const NodePtr& a, const NodePtr& b)
 {
     return a->get_value() < b->get_value();
+}
+
+bool Engine::CompareNodeUtility_(const NodePtr& a, const NodePtr& b) const
+{
+    return Utility_(a->get_board()) < Utility_(b->get_board()); 
 }
 
 Engine::Engine(Player me)
@@ -39,17 +47,20 @@ Engine::GameState Engine::FindGameState() const
 
 
 
-std::shared_ptr<NodePtrList> Engine::Successors_(Player player, std::shared_ptr<Node> node) const
+std::shared_ptr<NodePtrVec> Engine::Successors_(Player player, std::shared_ptr<Node> node) const
 {
-    std::unique_ptr<MoveList> moves = node->get_board()->Moves(player);
+/*
+    std::unique_ptr<MoveVec> moves = node->get_board()->Moves(player);
 
-    std::shared_ptr<NodePtrList> nodes(new NodePtrList);
+    std::shared_ptr<NodePtrVec> nodes(new NodePtrVec());
     for (auto move : *moves) {
         std::shared_ptr<Board> new_board(new Board(*(node->get_board())));
         move.ApplyToBoard(new_board);
         nodes->push_back(std::shared_ptr<Node>(new Node(new_board, node)));
     }
     return nodes;
+*/
+    return node->get_board()->Successors(player, node);
 }
 
 void Engine::TakeTurn()
@@ -118,10 +129,9 @@ NodePtr Engine::MaxValue(std::shared_ptr<Node> node, int alpha, int beta, int de
 
     NodePtr v = NodePtr(new Node(nullptr));
     v->set_value(INT32_MIN);
-    std::shared_ptr<NodePtrList> lst = Successors_(me_, node);
-    lst->sort([this] (NodePtr a, NodePtr b) {
-        return this->Utility_(a->get_board()) > this->Utility_(b->get_board());
-    });
+    std::shared_ptr<NodePtrVec> lst = Successors_(me_, node);
+    //lst->sort([this] (NodePtr a, NodePtr b) {
+    std::sort(lst->begin(), lst->end(), std::bind(&Engine::CompareNodeUtility_, this, _1, _2));
 
     for (auto child : *lst) {
         v = std::max(v, MinValue(child, alpha, beta, depth_counter - 1), &CompareNodeValues);
@@ -144,10 +154,9 @@ NodePtr Engine::MinValue(std::shared_ptr<Node> node, int alpha, int beta, int de
     NodePtr v = NodePtr(new Node(nullptr));
     v->set_value(INT32_MAX);
 
-    std::shared_ptr<NodePtrList> lst = Successors_(opponent_, node);
-    lst->sort([this] (NodePtr a, NodePtr b) {
-        return this->Utility_(a->get_board()) < this->Utility_(b->get_board());
-    });
+    std::shared_ptr<NodePtrVec> lst = Successors_(opponent_, node);
+    //lst->sort([this] (NodePtr a, NodePtr b) {
+    std::sort(lst->begin(), lst->end(), std::bind(&Engine::CompareNodeUtility_, this, _1, _2));
 
     for (auto child : *lst) {
         v = std::min(v, MaxValue(child, alpha, beta, depth_counter - 1), &CompareNodeValues);
@@ -163,6 +172,9 @@ NodePtr Engine::MinValue(std::shared_ptr<Node> node, int alpha, int beta, int de
 
 size_t Engine::Utility_(BoardPtr board) const
 {
-    return 2*board->NumMoves(me_) - board->NumMoves(opponent_);
-    //return board->Moves(me_)->size() - board->Moves(opponent_)->size();
+    //if (board->IsIsolatedBoard()) {
+    //    return board->NumMoves(me_); // TODO: Enhance
+    //} else {
+        return 2*board->NumMoves(me_) - board->NumMoves(opponent_);
+    //}
 }

@@ -11,6 +11,8 @@
 
 #include <list>
 #include <set>
+#include <vector>
+#include <deque>
 
 class Point;
 class Move;
@@ -43,6 +45,10 @@ typedef std::list<Board> BoardList;
 typedef std::list<Move> MoveList;
 typedef std::list<Node> NodeList;
 
+typedef std::vector<Point> PointVec;
+typedef std::vector<Move> MoveVec;
+
 typedef std::list<NodePtr> NodePtrList;
+typedef std::vector<NodePtr> NodePtrVec;
 
 #endif

@@ -38,8 +38,9 @@ private:
     
     
     size_t Utility_(BoardPtr board) const;
+    bool CompareNodeUtility_(const NodePtr& a, const NodePtr& b) const;
     
-    std::shared_ptr<NodePtrList> Successors_(Player player, std::shared_ptr<Node> node) const;
+    std::shared_ptr<NodePtrVec> Successors_(Player player, std::shared_ptr<Node> node) const;
     
     NodePtr AlphaBeta(std::shared_ptr<Node> node);
     NodePtr MaxValue(std::shared_ptr<Node> node, int alpha, int beta, int depth_counter);
