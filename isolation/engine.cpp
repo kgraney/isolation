@@ -71,6 +71,8 @@ void Engine::PlayGame(bool autoplay)
     
     clock_t begin, end;
     double time_spent;
+    Player* active = &me_;
+    Player* inactive = &opponent_;
 
     
     for(int i=0; i < 1000; i++) {
@@ -83,17 +85,19 @@ void Engine::PlayGame(bool autoplay)
         }
         
         begin = clock();
-        //if(me_ == kPlayerX) {
-        TakeMeatTurn_(me_);
+        if(active == &me_)
+            TakeAITurn_(*active);
+        else
+            TakeMeatTurn_(*active);
         end = clock();
         time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
         
-        std::cout << me_ << " (play " << i << ", time " << time_spent << ",)" << std::endl;
+        std::cout << *active << " (play " << i << ", time " << time_spent << ",)" << std::endl;
         std::cout << std::endl;
         std::cout << *current_board_;
 
         std::cout << "----------------- SWITCH TURNS -----------------" << std::endl;
-        std::swap(opponent_, me_);
+        std::swap(active, inactive);
     }
 }
 
