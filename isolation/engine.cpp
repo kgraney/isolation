@@ -69,6 +69,7 @@ void Engine::PlayGame(bool autoplay)
     active_ = me_;
     inactive_ = opponent_;
 
+    srand(time(NULL));
     
     for(int i=0; i < 1000; i++) {
         
@@ -107,7 +108,7 @@ void Engine::PlayGame(bool autoplay)
         if(active_ == me_)
             TakeAITurn_();
         else
-            TakeAITurn_();
+            TakeRandomTurn_();
 
         end = clock();
         time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
@@ -138,7 +139,10 @@ void Engine::TakeAITurn_()
 
 void Engine::TakeRandomTurn_()
 {
-    
+    auto pv = *current_board_->OpenPoints(current_board_->GetPosition(active_));
+    int rand_index = rand() % pv.size();
+    Move move(pv[rand_index] - current_board_->GetPosition(active_), active_);
+    move.ApplyToBoard(current_board_);
 }
 
 void Engine::TakeMeatTurn_()
