@@ -65,6 +65,8 @@ public:
     std::unique_ptr<MovePtrVec> SuccessorMoves(Player player) const;
     size_t NumMoves(const Player& player) const;
     
+    size_t NumReachable(const Player& player) const;
+    
 private:
 
     bool InvalidDiagonal(const Point& ref, const Point& direction) const;
@@ -81,6 +83,7 @@ private:
 
     bool SearchForPath_(const Point& start, const Point& goal, PointSet*) const;
     size_t OpenPointSearch_(const Point& ref, Point direction = Point(0,0), std::shared_ptr<PointVec> lst = nullptr) const;
+    size_t ExploreReachable_(const Point& start, PointSet* explored) const;
 };
 
 #endif /* defined(__isolation__board__) */

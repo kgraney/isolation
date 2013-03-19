@@ -194,6 +194,9 @@ std::unique_ptr<PointList> Board::PointPerimeter(const Point p) const
     std::unique_ptr<PointList> l(new PointList);
     for (auto dir : kPointDirections) {
         Point candidate = p + dir;
+        if (InvalidDiagonal(candidate, dir))
+            continue;
+
         if (OnBoard(candidate) && PointOpen(candidate) && candidate != p) {
             l->push_back(candidate);
         }
@@ -287,5 +290,30 @@ std::unique_ptr<MovePtrVec> Board::SuccessorMoves(Player player) const
 size_t Board::NumMoves(const Player& player) const
 {
     return OpenPointSearch_(GetPosition(player));
+}
+
+size_t Board::NumReachable(const Player& player) const
+{
+    PointSet* explored = new PointSet;
+    size_t num_reachable = ExploreReachable_(GetPosition(player), explored);
+    delete explored;
+    return num_reachable;
+}
+
+size_t Board::ExploreReachable_(const Point& start, PointSet* explored) const
+{
+    explored->insert(start);
+    
+    // find the possible one-step moves, and sort according to distance of that
+    // point from the goal (closest first)
+    std::unique_ptr<PointList> lst = PointPerimeter(start);
+    
+    size_t size = 0;
+    for (auto p : *lst) {
+        if (explored->find(p) == explored->end()) {
+            size += 1 + ExploreReachable_(p, explored);
+        }
+    }
+    return size;
 }
 
