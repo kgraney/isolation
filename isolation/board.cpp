@@ -43,6 +43,15 @@ Board::Board(const Board& board)
             array_[x][y] = board.array_[x][y];
 }
 
+void Board::clear()
+{
+    for (int x=0; x < kSize; x++)
+        for (int y=0; y < kSize; y++)
+            array_[x][y] = true;
+    xloc_ = Point(-1,-1);
+    oloc_ = Point(-1,-1);
+}
+
 void Board::set_loc_(const Point& pt, Point* loc)
 {
     if (OnBoard(pt)) {

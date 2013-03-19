@@ -30,6 +30,8 @@ public:
     
     Board();
     Board(const Board& board);
+    
+    void clear();
 
     // returns the winning player or false if no player has won yet
     Player IsTerminalBoard();
