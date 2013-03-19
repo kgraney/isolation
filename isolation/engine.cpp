@@ -175,7 +175,6 @@ NodePtr Engine::MaxValue(std::shared_ptr<Node> node, int alpha, int beta, int de
     NodePtr v = NodePtr(new Node(nullptr));
     v->set_value(INT32_MIN);
     std::shared_ptr<NodePtrVec> lst = Successors_(active_, node);
-    //lst->sort([this] (NodePtr a, NodePtr b) {
     std::sort(lst->begin(), lst->end(), std::bind(&Engine::CompareNodeUtility_, this, _1, _2));
 
     for (auto child : *lst) {
@@ -200,7 +199,6 @@ NodePtr Engine::MinValue(std::shared_ptr<Node> node, int alpha, int beta, int de
     v->set_value(INT32_MAX);
 
     std::shared_ptr<NodePtrVec> lst = Successors_(inactive_, node);
-    //lst->sort([this] (NodePtr a, NodePtr b) {
     std::sort(lst->begin(), lst->end(), std::bind(&Engine::CompareNodeUtility_, this, _1, _2));
 
     for (auto child : *lst) {
