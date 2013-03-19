@@ -49,30 +49,25 @@ Engine::GameState Engine::FindGameState() const
 
 std::shared_ptr<NodePtrVec> Engine::Successors_(Player player, std::shared_ptr<Node> node) const
 {
-/*
-    std::unique_ptr<MoveVec> moves = node->get_board()->Moves(player);
-
+    std::shared_ptr<MovePtrVec> moves = node->get_board()->SuccessorMoves(player);
     std::shared_ptr<NodePtrVec> nodes(new NodePtrVec());
-    for (auto move : *moves) {
-        std::shared_ptr<Board> new_board(new Board(*(node->get_board())));
-        move.ApplyToBoard(new_board);
-        nodes->push_back(std::shared_ptr<Node>(new Node(new_board, node)));
+    for (auto move: *moves) {
+        BoardPtr new_board(new Board(*current_board_));
+        move->ApplyToBoard(new_board);
+     
+        NodePtr new_node(new Node(new_board, node));
+        nodes->push_back(new_node);
     }
     return nodes;
-*/
-    return node->get_board()->Successors(player, node);
 }
 
 void Engine::PlayGame(bool autoplay)
 {
-    std::cout << "Entering board:" << std::endl;
-    std::cout << *(get_current_board()) << std::endl;
-    
     
     clock_t begin, end;
     double time_spent;
-    Player* active = &me_;
-    Player* inactive = &opponent_;
+    active_ = me_;
+    inactive_ = opponent_;
 
     
     for(int i=0; i < 1000; i++) {
@@ -80,34 +75,56 @@ void Engine::PlayGame(bool autoplay)
         // Check if someone has won yet
         Player winner = current_board_->IsTerminalBoard();
         if (winner) {
-            std::cout << "End of game " << winner << " wins." << std::endl;
+            std::cout << "################# !! END GAME !! #################" << std::endl;
+            std::cout << "--------------    " << winner << " wins!    --------------" << std::endl;
+            std::cout << "turn #: " << i << " last turn time: " << time_spent << std::endl;
+            std::cout << std::endl;
+            std::cout << *current_board_;
+            std::cout << std::endl;
             break;
         }
         
+        std::cout << "----------------- ** NEW TURN ** -----------------" << std::endl;
+        std::cout << "-----------------    " << active_ << "    -----------------" << std::endl;
+        std::cout << "turn #: " << i << " last turn time: " << time_spent << std::endl;
+        std::cout << std::endl;
+        std::cout << *current_board_;
+        std::cout << std::endl;
+        
+        Point point = current_board_->GetPosition(active_);
+        std::cout << "Possible moves from " << point << ":" << std::endl;
+        auto pv = *current_board_->OpenPoints(point);
+        Board b;
+        b.clear();
+        b.SetPosition(active_, current_board_->GetPosition(active_));
+        for (auto p : pv) {
+            b.ClosePoint(p);
+        }
+        std::cout << b << std::endl;
+        
         begin = clock();
-        if(active == &me_)
-            TakeAITurn_(*active);
+
+        if(active_ == me_)
+            TakeAITurn_();
         else
-            TakeMeatTurn_(*active);
+            TakeAITurn_();
+
         end = clock();
         time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
         
-        std::cout << *active << " (play " << i << ", time " << time_spent << ",)" << std::endl;
         std::cout << std::endl;
-        std::cout << *current_board_;
-
-        std::cout << "----------------- SWITCH TURNS -----------------" << std::endl;
-        std::swap(active, inactive);
+        
+        std::swap(active_, inactive_);
     }
 }
 
-void Engine::TakeAITurn_(Player player)
+void Engine::TakeAITurn_()
 {
 
     BoardPtr new_board(new Board(*current_board_));
     NodePtr new_node(new Node(new_board));
     
-    NodePtr best_node = AlphaBeta(new_node, 4);
+    NodePtr best_node = AlphaBeta(new_node, 5);
     int best_value = best_node->get_value();
     std::cout << "AI: move with utility " << best_value << std::endl;
     
@@ -119,13 +136,19 @@ void Engine::TakeAITurn_(Player player)
     current_board_ = best_node->get_board();;
 }
 
-void Engine::TakeMeatTurn_(Player player)
+void Engine::TakeRandomTurn_()
+{
+    
+}
+
+void Engine::TakeMeatTurn_()
 {
     Point new_loc;
-    std::cout << "Enter coordinates " << player << " will move to." << std::endl;
+    std::cout << "Enter coordinates " << active_ << " will move to." << std::endl;
     std::cin >> new_loc;
     
-    Move move(new_loc - current_board_->GetPosition(player), player);
+    // TODO: validate move
+    Move move(new_loc - current_board_->GetPosition(active_), active_);
     move.ApplyToBoard(current_board_);
 }
 
@@ -147,7 +170,7 @@ NodePtr Engine::MaxValue(std::shared_ptr<Node> node, int alpha, int beta, int de
 
     NodePtr v = NodePtr(new Node(nullptr));
     v->set_value(INT32_MIN);
-    std::shared_ptr<NodePtrVec> lst = Successors_(me_, node);
+    std::shared_ptr<NodePtrVec> lst = Successors_(active_, node);
     //lst->sort([this] (NodePtr a, NodePtr b) {
     std::sort(lst->begin(), lst->end(), std::bind(&Engine::CompareNodeUtility_, this, _1, _2));
 
@@ -172,7 +195,7 @@ NodePtr Engine::MinValue(std::shared_ptr<Node> node, int alpha, int beta, int de
     NodePtr v = NodePtr(new Node(nullptr));
     v->set_value(INT32_MAX);
 
-    std::shared_ptr<NodePtrVec> lst = Successors_(opponent_, node);
+    std::shared_ptr<NodePtrVec> lst = Successors_(inactive_, node);
     //lst->sort([this] (NodePtr a, NodePtr b) {
     std::sort(lst->begin(), lst->end(), std::bind(&Engine::CompareNodeUtility_, this, _1, _2));
 
@@ -193,6 +216,6 @@ size_t Engine::Utility_(BoardPtr board) const
     //if (board->IsIsolatedBoard()) {
     //    return board->NumMoves(me_); // TODO: Enhance
     //} else {
-        return 2*board->NumMoves(me_) - board->NumMoves(opponent_);
+        return 2*board->NumMoves(active_) - board->NumMoves(inactive_);
     //}
 }

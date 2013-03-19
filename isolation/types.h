@@ -48,6 +48,8 @@ typedef std::list<Node> NodeList;
 typedef std::vector<Point> PointVec;
 typedef std::vector<Move> MoveVec;
 
+typedef std::vector<MovePtr> MovePtrVec;
+
 typedef std::list<NodePtr> NodePtrList;
 typedef std::vector<NodePtr> NodePtrVec;
 

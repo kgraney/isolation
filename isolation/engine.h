@@ -34,8 +34,9 @@ public:
     void PlayGame(bool autoplay);
     
 private:
-    void TakeAITurn_(Player player);
-    void TakeMeatTurn_(Player player);
+    void TakeAITurn_();
+    void TakeMeatTurn_();
+    void TakeRandomTurn_();
     
     GameState FindGameState() const;
     
@@ -56,6 +57,9 @@ private:
     
     Player me_;
     Player opponent_;
+    
+    Player active_;
+    Player inactive_;
 };
 
 #endif /* defined(__isolation__engine__) */

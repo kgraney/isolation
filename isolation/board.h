@@ -46,6 +46,7 @@ public:
     
     inline void set_xloc(const Point& pt) { set_loc_(pt, &xloc_); }
     inline void set_oloc(const Point& pt) { set_loc_(pt, &oloc_); }
+    void SetPosition(Player player, Point pt);
     
     std::shared_ptr<PointVec> OpenPoints(const Point& ref) const;
     
@@ -61,10 +62,12 @@ public:
     bool IsPointBlocked(const Point& ref, Point direction = Point(0,0)) const;
     
     // return a list of moves the given player can make on a board
-    std::unique_ptr<NodePtrVec> Successors(Player player, NodePtr node) const;
+    std::unique_ptr<MovePtrVec> SuccessorMoves(Player player) const;
     size_t NumMoves(const Player& player) const;
     
 private:
+
+    bool InvalidDiagonal(const Point& ref, const Point& direction) const;
     
     bool OnBoard(const Point& p) const;
     

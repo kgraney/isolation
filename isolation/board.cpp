@@ -78,6 +78,17 @@ void Board::ClosePoint(const Point& pt)
         throw std::out_of_range("Point not on the board");
 }
 
+bool Board::InvalidDiagonal(const Point& ref, const Point& dir) const
+{
+    if (dir.x() == 0 || dir.y() == 0)
+        return false; // not a diagonal move
+
+    if (PointOpen(ref - Point(dir.x(), 0)) || PointOpen(ref - Point(0, dir.y())))
+        return false;
+
+    return true;
+}
+
 std::shared_ptr<PointVec> Board::OpenPoints(const Point& ref) const
 {
     std::shared_ptr<PointVec> l(new PointVec);
@@ -94,14 +105,8 @@ size_t Board::OpenPointSearch_(const Point& ref, Point direction, std::shared_pt
         // for subsequent movements, continue on in the same direction
 
         if (PointOpen(ref)) {
-            if (direction.x() == direction.y()) {
-                if(PointOpen(ref + Point(direction.x(),0)) || PointOpen(ref + Point(0,direction.y()))) {
-                   if (lst)
-                       lst->push_back(ref);
-                   return 1 + OpenPointSearch_(ref + direction, direction, lst);
-                }
+            if (InvalidDiagonal(ref, direction))
                 return 0;
-            }
 
             if (lst)
                 lst->push_back(ref);
@@ -113,9 +118,6 @@ size_t Board::OpenPointSearch_(const Point& ref, Point direction, std::shared_pt
         // for the first movement, try each direction
         size_t r = 0;
         for (auto dir : kPointDirections) {
-            if (dir.x() == dir.y()) // on a diagonal
-                if (!PointOpen(ref + Point(dir.x(),0)) && !PointOpen(ref + Point(0,dir.y())))
-                    continue;
             r += OpenPointSearch_(ref + dir, dir, lst);
         }
         return r;
@@ -128,23 +130,16 @@ bool Board::IsPointBlocked(const Point& ref, Point direction) const
         return true;
     
     if (direction != Point(0,0)) {
-        if (PointOpen(ref)) {
-            if (direction.x() == direction.y()) {
-                if (PointOpen(ref + Point(direction.x(),0))
-                    || PointOpen(ref + Point(0,direction.y())))
-                   return false;
-                return true;
-            }
+        if (InvalidDiagonal(ref, direction))
+            return true;
 
+        if (PointOpen(ref))
             return false;
-        } else
+        else
             return true;
     } else {
         bool blocked = true;
         for (auto dir : kPointDirections) {
-            if (dir.x() == dir.y()) // on a diagonal
-                if (!PointOpen(ref + Point(dir.x(),0)) && !PointOpen(ref + Point(0,dir.y())))
-                    continue;
             blocked = blocked && IsPointBlocked(ref + dir, dir);
         }
         return blocked;
@@ -262,22 +257,31 @@ Point Board::GetPosition(Player player) const
     }
 }
 
-std::unique_ptr<NodePtrVec> Board::Successors(Player player, NodePtr node) const
+void Board::SetPosition(Player player, Point pt)
+{
+    switch (player) {
+        case kPlayerX:
+            set_xloc(pt);
+            break;
+        case kPlayerO:
+            set_oloc(pt);
+            break;
+        default:
+            throw std::invalid_argument("Bad player in SetPosition");
+    }
+}
+
+std::unique_ptr<MovePtrVec> Board::SuccessorMoves(Player player) const
 {    
     Point start = GetPosition(player);
-    std::unique_ptr<NodePtrVec> nodes(new NodePtrVec());
+    std::unique_ptr<MovePtrVec> moves(new MovePtrVec());
 
     std::shared_ptr<PointVec> pl = OpenPoints(start);
     for(auto &p : *pl) {
-        Move move = Move(p - start, player);
-        
-        BoardPtr new_board(new Board(*this));
-        move.ApplyToBoard(new_board);
-        
-        NodePtr new_node(new Node(new_board, node));
-        nodes->push_back(new_node);
+        MovePtr move = MovePtr(new Move(p - start, player));
+        moves->push_back(move);
     }
-    return nodes;
+    return moves;
 }
 
 size_t Board::NumMoves(const Player& player) const
