@@ -149,8 +149,16 @@ void Engine::TakeMeatTurn_()
 {
     Point new_loc;
     std::cout << "Enter coordinates " << active_ << " will move to." << std::endl;
+prompt_coord:
     std::cin >> new_loc;
     
+    auto pv = *current_board_->OpenPoints(current_board_->GetPosition(active_));
+    if (std::find(pv.begin(), pv.end(), new_loc) != pv.end())
+        std::cout << "Valid move!" << std::endl;
+    else {
+        std::cout << "Invalid move, try again!" << std::endl;
+        goto prompt_coord;
+    }
     // TODO: validate move
     Move move(new_loc - current_board_->GetPosition(active_), active_);
     move.ApplyToBoard(current_board_);
