@@ -53,6 +53,8 @@ public:
     void ClosePoint(const Point& pt);
     
     bool PointOpen(const Point& pt) const;
+
+    bool PointLooseOpen(const Point& pt) const;
     
     // Returns a list of points surrounding the point p.  Does not include
     // points off the edge of the board or any points that are unreachable with
@@ -81,9 +83,14 @@ private:
     Point xloc_; // my location
     Point oloc_; // my opponent's location
 
+    bool is_isolated_; // cache of this board being isolated
+    bool is_isolated_valid_;
+
     bool SearchForPath_(const Point& start, const Point& goal, PointSet*) const;
     size_t OpenPointSearch_(const Point& ref, Point direction = Point(0,0), std::shared_ptr<PointVec> lst = nullptr) const;
     size_t ExploreReachable_(const Point& start, PointSet* explored) const;
+
+    void ClearCaches_();
 };
 
 #endif /* defined(__isolation__board__) */

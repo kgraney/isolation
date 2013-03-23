@@ -21,7 +21,7 @@ const std::initializer_list<Point> Board::kPointDirections = {
 };
 
 Board::Board()
-: xloc_(0,0), oloc_(kSize-1,kSize-1)
+: xloc_(0,0), oloc_(kSize-1,kSize-1), is_isolated_valid_(false)
 {
     for (int x=0; x < kSize; x++) {
         for (int y=0; y < kSize; y++) {
@@ -36,7 +36,7 @@ Board::Board()
 }
 
 Board::Board(const Board& board)
-: xloc_(board.xloc_), oloc_(board.oloc_)
+: xloc_(board.xloc_), oloc_(board.oloc_), is_isolated_valid_(board.is_isolated_valid_)
 {
     for (int x=0; x < kSize; x++)
         for (int y=0; y < kSize; y++)
@@ -50,6 +50,7 @@ void Board::clear()
             array_[x][y] = true;
     xloc_ = Point(-1,-1);
     oloc_ = Point(-1,-1);
+    ClearCaches_(); 
 }
 
 void Board::set_loc_(const Point& pt, Point* loc)
@@ -70,11 +71,17 @@ bool Board::PointOpen(const Point& pt) const
         return false;
 }
 
+bool Board::PointLooseOpen(const Point& pt) const
+{
+    return pt == get_xloc() || pt == get_oloc() || PointOpen(pt);
+}
+
 void Board::ClosePoint(const Point& pt)
 {
-    if (OnBoard(pt))
+    if (OnBoard(pt)) {
         array_[pt.x()][pt.y()] = false;
-    else
+        ClearCaches_(); 
+    } else
         throw std::out_of_range("Point not on the board");
 }
 
@@ -197,9 +204,8 @@ std::unique_ptr<PointList> Board::PointPerimeter(const Point p) const
         if (InvalidDiagonal(candidate, dir))
             continue;
 
-        if (OnBoard(candidate) && PointOpen(candidate) && candidate != p) {
+        if (OnBoard(candidate) && PointLooseOpen(candidate))
             l->push_back(candidate);
-        }
     }
     return l;
 }
@@ -211,17 +217,24 @@ bool Board::OnBoard(const Point& p) const
 
 bool Board::IsIsolatedBoard()
 {
+    if (is_isolated_valid_)
+        return is_isolated_;
+
     PointSet* explored = new PointSet;
     bool result = SearchForPath_(get_xloc(), get_oloc(), explored);
     delete explored;
-    
+
+    is_isolated_ = result;
+    is_isolated_valid_ = true;
+
     return !result;
 }
 
 bool Board::SearchForPath_(const Point& start, const Point& goal, PointSet* explored) const
 {
     explored->insert(start);
-    //std::cout << start << explored->size() << std::endl;
+    if (start == goal)
+        return true;
     
     // find the possible one-step moves, and sort according to distance of that
     // point from the goal (closest first)
@@ -230,11 +243,6 @@ bool Board::SearchForPath_(const Point& start, const Point& goal, PointSet* expl
         return p1.DistanceTo(goal) < p2.DistanceTo(goal);
     });
 
-
-    if (start == goal)
-        return true;
-    else if (lst->size() == 0)
-        return false;
 
     bool b = false;
     for (auto p : *lst) {
@@ -316,4 +324,10 @@ size_t Board::ExploreReachable_(const Point& start, PointSet* explored) const
     }
     return size;
 }
+
+void Board::ClearCaches_()
+{
+    is_isolated_valid_ = false;
+}
+
 
