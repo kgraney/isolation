@@ -6,6 +6,8 @@
 //  Copyright (c) 2013 Kevin Graney. All rights reserved.
 //
 
+#include <stdexcept>
+
 #include "move.h"
 #include "board.h"
 #include "types.h"

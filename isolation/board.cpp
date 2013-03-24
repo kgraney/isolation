@@ -7,6 +7,7 @@
 //
 
 #include <exception>
+#include <stdexcept>
 
 #include "board.h"
 #include "point.h"

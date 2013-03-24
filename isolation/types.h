@@ -13,6 +13,7 @@
 #include <set>
 #include <vector>
 #include <deque>
+#include <memory>
 
 class Point;
 class Move;

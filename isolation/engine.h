@@ -11,6 +11,7 @@
 
 #include <iostream>
 #include <list>
+#include <limits>
 
 #include "types.h"
 #include "move.h"

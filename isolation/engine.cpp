@@ -8,6 +8,7 @@
 
 #include <time.h>
 #include <functional>
+#include <algorithm>
 
 #include "engine.h"
 #include "board.h"
