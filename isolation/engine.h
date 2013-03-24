@@ -17,6 +17,9 @@
 
 class Board;
 
+const double kPInf = std::numeric_limits<double>::infinity();
+const double kNInf = -std::numeric_limits<double>::infinity();
+
 class Engine
 {
 public:
@@ -41,14 +44,16 @@ private:
     GameState FindGameState() const;
     
     
-    size_t Utility_(BoardPtr board) const;
+    double Utility_(BoardPtr board) const;
     bool CompareNodeUtility_(const NodePtr& a, const NodePtr& b) const;
     
     std::shared_ptr<NodePtrVec> Successors_(Player player, std::shared_ptr<Node> node) const;
     
     NodePtr AlphaBeta(std::shared_ptr<Node> node, int depth);
-    NodePtr MaxValue(std::shared_ptr<Node> node, int alpha, int beta, int depth_counter);
-    NodePtr MinValue(std::shared_ptr<Node> node, int alpha, int beta, int depth_counter);
+    NodePtr MaxValue(std::shared_ptr<Node> node, double alpha, double beta, int depth_counter, bool first);
+    NodePtr MinValue(std::shared_ptr<Node> node, double alpha, double beta, int depth_counter, bool first);
+
+    bool CutoffSearch_(NodePtr node) const;
     
     //// Data
     

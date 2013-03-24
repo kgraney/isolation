@@ -23,8 +23,8 @@ public:
     
     const std::shared_ptr<Board> get_board() { return board_; }
     
-    int get_value() { return value_; }
-    void set_value(int v) { value_ = v; }
+    double get_value() { return value_; }
+    void set_value(double v) { value_ = v; }
     
     NodePtr get_parent() { return parent_; }
     
@@ -32,7 +32,7 @@ private:
     
     std::shared_ptr<Board> board_;
     std::shared_ptr<Node> parent_;
-    int value_;
+    double value_;
 };
 
 #endif /* defined(__isolation__node__) */
