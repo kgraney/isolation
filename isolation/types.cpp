@@ -20,3 +20,17 @@ std::ostream& operator<< (std::ostream& stream, const Player& player)
     stream << kPlayerName[player];
     return stream;
 }
+
+#define X(name, string) string,
+std::string kGameStates[] = {
+    kGameStateXMacro
+};
+#undef X
+
+std::ostream& operator<< (std::ostream& stream, const GameState& player)
+{
+    stream << kGameStates[player];
+    return stream;
+}
+
+

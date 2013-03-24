@@ -32,7 +32,21 @@ typedef enum {
 } Player;
 #undef X
 
+
+#define kGameStateXMacro \
+    X(kSparseBoard, "Sparse Board") \
+    X(kMatchup, "Matchup") \
+    X(kIsolated, "Isolated") \
+    X(kFinished, "Finished")
+
+#define X(name, string) name,
+typedef enum {
+    kGameStateXMacro
+} GameState;
+#undef X
+
 std::ostream& operator<< (std::ostream& stream, const Player& player);
+std::ostream& operator<< (std::ostream& stream, const GameState& player);
 
 typedef std::shared_ptr<Node> NodePtr;
 typedef std::shared_ptr<Board> BoardPtr;

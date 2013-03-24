@@ -34,18 +34,16 @@ Engine::Engine(Player me)
         opponent_ = kPlayerX;
 }
 
-Engine::GameState Engine::FindGameState() const
+GameState Engine::FindGameState(BoardPtr board) const
 {
-    if (current_board_->IsTerminalBoard()) {
+    if (board->IsTerminalBoard()) {
         return kFinished;
-    } else if (current_board_->IsIsolatedBoard()) {
-        return kEndGame;
+    } else if (board->IsIsolatedBoard()) {
+        return kIsolated;
     } else {
         return kMatchup;
     }
 }
-
-
 
 std::shared_ptr<NodePtrVec> Engine::Successors_(Player player, std::shared_ptr<Node> node) const
 {

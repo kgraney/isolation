@@ -23,13 +23,6 @@ const double kNInf = -std::numeric_limits<double>::infinity();
 class Engine
 {
 public:
-    typedef enum {
-        kSparseBoard,
-        kMatchup,
-        kEndGame,
-        kFinished
-    } GameState;
-    
     Engine(Player me);
     
     const std::shared_ptr<Board> get_current_board() { return current_board_; }
@@ -41,7 +34,7 @@ private:
     void TakeMeatTurn_();
     void TakeRandomTurn_();
     
-    GameState FindGameState() const;
+    GameState FindGameState(BoardPtr board) const;
     
     
     double Utility_(BoardPtr board) const;
@@ -57,6 +50,7 @@ private:
     
     //// Data
     
+    GameState current_state_;
     std::shared_ptr<Board> current_board_;
     std::shared_ptr<Node> current_node_;
     
