@@ -66,8 +66,8 @@ void Engine::PlayGame(bool autoplay)
     
     clock_t begin, end;
     double time_spent;
-    active_ = me_;
-    inactive_ = opponent_;
+    active_ = kPlayerX;
+    inactive_ = kPlayerO;
 
     srand(time(NULL));
     
