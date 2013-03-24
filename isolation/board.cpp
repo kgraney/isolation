@@ -87,6 +87,8 @@ void Board::ClosePoint(const Point& pt)
 
 bool Board::InvalidDiagonal(const Point& ref, const Point& dir) const
 {
+    return false; // All diagonal moves are legal?
+
     if (dir.x() == 0 || dir.y() == 0)
         return false; // not a diagonal move
 
