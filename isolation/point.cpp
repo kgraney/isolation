@@ -48,18 +48,8 @@ std::istream& operator>> (std::istream& stream, Point& pt)
 {
     int x, y;
  
-prompt_x:
-    std::cout << "x? ";
-    stream >> x;
-    if (std::cin.fail()) {
-        std::cin.clear();
-        std::cin.ignore();
-        goto prompt_x;
-    }
-    pt.set_x(x-1);
-    
 prompt_y:
-    std::cout << "y? ";
+    std::cout << "row (y)? ";
     stream >> y;
     if (std::cin.fail()) {
         std::cin.clear();
@@ -68,5 +58,15 @@ prompt_y:
     }
     pt.set_y(y-1);
 
+prompt_x:
+    std::cout << "column (x)? ";
+    stream >> x;
+    if (std::cin.fail()) {
+        std::cin.clear();
+        std::cin.ignore();
+        goto prompt_x;
+    }
+    pt.set_x(x-1);
+ 
     return stream;
 }
