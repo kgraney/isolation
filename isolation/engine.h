@@ -39,6 +39,7 @@ private:
     
     double Utility_(BoardPtr board) const;
     bool CompareNodeUtility_(const NodePtr& a, const NodePtr& b) const;
+    bool CompareNodeUtilityReversed_(const NodePtr& a, const NodePtr& b) const;
     
     std::shared_ptr<NodePtrVec> Successors_(Player player, std::shared_ptr<Node> node) const;
     

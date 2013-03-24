@@ -22,6 +22,11 @@ bool CompareNodeValues(const NodePtr& a, const NodePtr& b)
 
 bool Engine::CompareNodeUtility_(const NodePtr& a, const NodePtr& b) const
 {
+    return Utility_(a->get_board()) < Utility_(b->get_board()); 
+}
+
+bool Engine::CompareNodeUtilityReversed_(const NodePtr& a, const NodePtr& b) const
+{
     return Utility_(a->get_board()) > Utility_(b->get_board()); 
 }
 
@@ -70,10 +75,34 @@ void Engine::PlayGame(bool autoplay)
     srand(time(NULL));
     
     for(int i=0; i < 1000; i++) {
-        
+       
+        std::cout << "----------------- ** NEW TURN ** -----------------" << std::endl;
+        std::cout << "-----------------    " << active_ << "    -----------------" << std::endl;
+        std::cout << "turn #: " << i << " last turn time: " << time_spent << std::endl;
+        std::cout << std::endl;
+        std::cout << *current_board_;
+        std::cout << std::endl;
+
+        GameState current_state_ = FindGameState(current_board_);
+        std::cout << "Game state: " << current_state_ << std::endl;
+
+        if (current_board_->IsIsolatedBoard()) {
+            int x_reach = current_board_->NumReachable(kPlayerX);
+            int o_reach = current_board_->NumReachable(kPlayerO);
+            if (x_reach > o_reach) {
+                std::cout << "X likely to win" << std::endl;
+            } else if (x_reach < o_reach) {
+                std::cout << "O likely to win" << std::endl;
+            } else {
+                std::cout << "Too close to call" << std::endl;
+            }
+        }
+ 
         // Check if someone has won yet
         Player winner = current_board_->IsTerminalBoard();
         if (winner) {
+            if (winner == kAllPlayers)
+                winner = active_; // next player loses if this is a terminal board
             std::cout << "################# !! END GAME !! #################" << std::endl;
             std::cout << "--------------    " << winner << " wins!    --------------" << std::endl;
             std::cout << "turn #: " << i << " last turn time: " << time_spent << std::endl;
@@ -82,25 +111,7 @@ void Engine::PlayGame(bool autoplay)
             std::cout << std::endl;
             break;
         }
-        
-        std::cout << "----------------- ** NEW TURN ** -----------------" << std::endl;
-        std::cout << "-----------------    " << active_ << "    -----------------" << std::endl;
-        std::cout << "turn #: " << i << " last turn time: " << time_spent << std::endl;
-        std::cout << std::endl;
-        std::cout << *current_board_;
-        std::cout << std::endl;
-        if (current_board_->IsIsolatedBoard()) {
-            std::cout << "Isolated board state." << std::endl;
-            int x_reach = current_board_->NumReachable(kPlayerX);
-            int o_reach = current_board_->NumReachable(kPlayerO);
-            if (x_reach > o_reach) {
-                std::cout << "X likely to win" << std::endl;
-            } else if (o_reach > x_reach) {
-                std::cout << "O likely to win" << std::endl;
-            } else {
-                std::cout << "Too close to call" << std::endl;
-            }
-        }
+ 
         
 /*
         Point point = current_board_->GetPosition(active_);
@@ -126,7 +137,8 @@ void Engine::PlayGame(bool autoplay)
         time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
         
         std::cout << std::endl;
-        
+        std::cout << active_ << " moved to " << current_board_->GetPosition(active_) << std::endl;
+       
         std::swap(active_, inactive_);
     }
 }
@@ -134,7 +146,7 @@ void Engine::PlayGame(bool autoplay)
 void Engine::TakeAITurn_()
 {
     NodePtr best_node;
-    for (int i=2; i <= 6; i+=2) {
+    for (int i=2; i <= 8; i+=2) {
         BoardPtr new_board(new Board(*current_board_));
         NodePtr new_node(new Node(new_board));
         clock_t start = clock();
@@ -203,7 +215,7 @@ NodePtr Engine::MaxValue(std::shared_ptr<Node> node, double alpha, double beta, 
     }
 
     std::shared_ptr<NodePtrVec> lst = Successors_(active_, node);
-    std::sort(lst->begin(), lst->end(), std::bind(&Engine::CompareNodeUtility_, this, _1, _2));
+    std::sort(lst->begin(), lst->end(), std::bind(&Engine::CompareNodeUtilityReversed_, this, _1, _2));
 
     NodePtr v = *lst->begin();
     v->set_value(kNInf);
@@ -250,16 +262,33 @@ bool Engine::CutoffSearch_(NodePtr node) const
 
 double Engine::Utility_(BoardPtr board) const
 {
-    if (board->IsIsolatedBoard()) {
-        // TODO: Enhance
-        int active_reach = board->NumReachable(active_);
-        int inactive_reach = board->NumReachable(inactive_);
-        if (active_reach > inactive_reach)
-            return kPInf;
-            //return active_reach - inactive_reach + 1000;
-        else
-            return kNInf;
-    } else {
-        return board->NumMoves(active_) - board->NumMoves(inactive_);
+    GameState state = FindGameState(board);
+    int active_reach, inactive_reach;
+    Player winner;
+
+    switch(state) {
+        // Winning boards are as great as possible, losing boards as bad as possible.
+        case kFinished:
+            winner = board->IsTerminalBoard();
+            if (winner == active_) return kPInf;
+            else return kNInf;
+            break;
+
+
+        case kIsolated:
+            active_reach = board->NumReachable(active_);
+            inactive_reach = board->NumReachable(inactive_);
+            if (active_reach > inactive_reach)
+                return active_reach - inactive_reach + 1000;
+            else
+                return -1000;
+
+            break;
+
+        case kMatchup:
+        default:
+            return 2*board->NumMoves(active_) - board->NumMoves(inactive_);
+            break;
     }
 }
+

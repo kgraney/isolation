@@ -33,6 +33,7 @@ Board::Board()
     // closed by set_loc_
     ClosePoint(Point(0,0));
     ClosePoint(Point(kSize-1, kSize-1));
+    ClearCaches_();
 }
 
 Board::Board(const Board& board)
@@ -41,6 +42,7 @@ Board::Board(const Board& board)
     for (int x=0; x < kSize; x++)
         for (int y=0; y < kSize; y++)
             array_[x][y] = board.array_[x][y];
+    ClearCaches_();
 }
 
 void Board::clear()
@@ -219,8 +221,8 @@ bool Board::OnBoard(const Point& p) const
 
 bool Board::IsIsolatedBoard()
 {
-    if (is_isolated_valid_)
-        return is_isolated_;
+    //if (is_isolated_valid_)
+    //    return is_isolated_;
 
     PointSet* explored = new PointSet;
     bool result = SearchForPath_(get_xloc(), get_oloc(), explored);
@@ -244,7 +246,6 @@ bool Board::SearchForPath_(const Point& start, const Point& goal, PointSet* expl
     lst->sort([&goal] (const Point& p1, const Point& p2) {
         return p1.DistanceTo(goal) < p2.DistanceTo(goal);
     });
-
 
     bool b = false;
     for (auto p : *lst) {
