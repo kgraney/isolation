@@ -202,10 +202,11 @@ NodePtr Engine::MaxValue(std::shared_ptr<Node> node, double alpha, double beta, 
         return node;
     }
 
-    NodePtr v = NodePtr(new Node(nullptr));
-    v->set_value(kNInf);
     std::shared_ptr<NodePtrVec> lst = Successors_(active_, node);
     std::sort(lst->begin(), lst->end(), std::bind(&Engine::CompareNodeUtility_, this, _1, _2));
+
+    NodePtr v = *lst->begin();
+    v->set_value(kNInf);
 
     for (auto child : *lst) {
         v = std::max(v, MinValue(child, alpha, beta, depth_counter - 1, false), &CompareNodeValues);
@@ -225,11 +226,11 @@ NodePtr Engine::MinValue(std::shared_ptr<Node> node, double alpha, double beta, 
         return node;
     }
     
-    NodePtr v = NodePtr(new Node(nullptr));
-    v->set_value(kPInf);
-
     std::shared_ptr<NodePtrVec> lst = Successors_(inactive_, node);
     std::sort(lst->begin(), lst->end(), std::bind(&Engine::CompareNodeUtility_, this, _1, _2));
+
+    NodePtr v = *lst->begin();
+    v->set_value(kPInf);
 
     for (auto child : *lst) {
         v = std::min(v, MaxValue(child, alpha, beta, depth_counter - 1, false), &CompareNodeValues);
