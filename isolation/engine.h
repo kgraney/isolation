@@ -12,6 +12,7 @@
 #include <iostream>
 #include <list>
 #include <limits>
+#include <chrono>
 
 #include "types.h"
 #include "move.h"
@@ -48,7 +49,7 @@ private:
     NodePtr MaxValue(std::shared_ptr<Node> node, double alpha, double beta, int depth_counter, bool first);
     NodePtr MinValue(std::shared_ptr<Node> node, double alpha, double beta, int depth_counter, bool first);
 
-    bool CutoffSearch_(NodePtr node) const;
+    bool CutoffSearch_(NodePtr node);
     
     //// Data
     
@@ -61,6 +62,10 @@ private:
     
     Player active_;
     Player inactive_;
+
+    std::chrono::time_point<std::chrono::system_clock> turn_start_;
+    int turn_limit_; // max seconds a turn can take
+    bool time_expired_;
 };
 
 #endif /* defined(__isolation__engine__) */

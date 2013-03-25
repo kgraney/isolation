@@ -32,7 +32,8 @@ bool Engine::CompareNodeUtilityReversed_(const NodePtr& a, const NodePtr& b) con
 }
 
 Engine::Engine(Player me)
-: me_(me), current_board_(new Board()), current_node_(new Node(current_board_))
+: me_(me), current_board_(new Board()), current_node_(new Node(current_board_)),
+    turn_limit_(5)
 {
     if (me_ == kPlayerX)
         opponent_ = kPlayerO;
@@ -132,7 +133,7 @@ void Engine::PlayGame(bool autoplay)
         if(active_ == me_)
             TakeAITurn_();
         else
-            TakeRandomTurn_();
+            TakeAITurn_();
 
         end = clock();
         time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
@@ -146,16 +147,25 @@ void Engine::PlayGame(bool autoplay)
 
 void Engine::TakeAITurn_()
 {
+    turn_start_ = std::chrono::system_clock::now();
+    time_expired_ = false;
+
     NodePtr best_node;
-    for (int i=2; i <= 8; i+=2) {
+    for (int i=2; i <= 14; i+=2) {
         BoardPtr new_board(new Board(*current_board_));
         NodePtr new_node(new Node(new_board));
         clock_t start = clock();
     
-        best_node = AlphaBeta(new_node, i);
+        NodePtr result = AlphaBeta(new_node, i);
         double time_spent = (double)(clock() - start) / CLOCKS_PER_SEC;
         std::cout << "depth = " << i << " time = " << time_spent;
-        std::cout << " utility = " << best_node->get_value() << std::endl;
+        std::cout << " utility = " << result->get_value() << std::endl;
+        if (!time_expired_) {
+            best_node = result;
+        } else {
+            std::cout << "time expired, pre-mature cut-off" << std::endl;
+            break;
+        }
         //std::cout << *best_node->get_board();
     }
 
@@ -256,9 +266,14 @@ NodePtr Engine::MinValue(std::shared_ptr<Node> node, double alpha, double beta, 
     return v;
 }
 
-bool Engine::CutoffSearch_(NodePtr node) const
+bool Engine::CutoffSearch_(NodePtr node)
 {
-    return node->get_board()->IsTerminalBoard() || node->get_board()->IsIsolatedBoard();
+    auto now_time = std::chrono::system_clock::now();
+    int total_seconds = std::chrono::duration_cast<std::chrono::seconds> (now_time-turn_start_).count();
+    time_expired_ = total_seconds >= turn_limit_;
+
+    return node->get_board()->IsTerminalBoard() || node->get_board()->IsIsolatedBoard()
+        || time_expired_;
 }
 
 double Engine::Utility_(BoardPtr board) const
