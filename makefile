@@ -3,7 +3,7 @@ SRC=$(shell ls isolation/*.cpp)
 OBJ=$(patsubst %.cpp,%.o,$(SRC))
 
 #CXXFLAGS=-std=c++11 -stdlib=libc++
-CXXFLAGS=-std=c++11
+CXXFLAGS=-std=c++11 -O3
 CXX=g++
 
 default: isolation
