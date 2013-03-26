@@ -25,7 +25,7 @@ const double kNInf = -std::numeric_limits<double>::infinity();
 class Engine
 {
 public:
-    Engine(Player me);
+    Engine(Player me, int turn_limit);
     
     const std::shared_ptr<Board> get_current_board() { return current_board_; }
     

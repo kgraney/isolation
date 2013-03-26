@@ -31,9 +31,9 @@ bool Engine::CompareNodeUtilityReversed_(const NodePtr& a, const NodePtr& b) con
     return Utility_(a->get_board()) > Utility_(b->get_board()); 
 }
 
-Engine::Engine(Player me)
+Engine::Engine(Player me, int turn_limit)
 : me_(me), current_board_(new Board()), current_node_(new Node(current_board_)),
-    turn_limit_(5)
+    turn_limit_(turn_limit)
 {
     if (me_ == kPlayerX)
         opponent_ = kPlayerO;

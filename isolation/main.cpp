@@ -16,7 +16,7 @@ int main(int argc, const char * argv[])
     std::cout << "Kevin M. Graney (kmg2165@columbia.edu)" << std::endl;
     std::cout << std::endl;
     
-    Engine eng(kPlayerX);
+    Engine eng(kPlayerX, 20);
     eng.PlayGame(true);
     
     return 0;
