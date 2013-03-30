@@ -76,7 +76,9 @@ void Engine::PlayGame(bool autoplay)
 
     srand(time(NULL));
     
-    for(int i=0; i < 1000; i++) {
+    int i = 0;
+    while (true) {
+        i++;
        
         std::cout << "----------------- ** NEW TURN ** -----------------" << std::endl;
         std::cout << "-----------------    " << active_ << "    -----------------" << std::endl;
@@ -85,8 +87,12 @@ void Engine::PlayGame(bool autoplay)
         std::cout << *current_board_;
         std::cout << std::endl;
 
-        GameState current_state_ = FindGameState(current_board_);
-        std::cout << "Game state: " << current_state_ << std::endl;
+        //GameState current_state_ = FindGameState(current_board_);
+        //std::cout << "Game state: " << current_state_ << std::endl;
+        std::cout << "starting move..." << std::endl;
+        begin = clock();
+        turn_start_ = std::chrono::system_clock::now();
+
 
         if (current_board_->IsIsolatedBoard()) {
             int x_reach = current_board_->NumReachable(kPlayerX);
@@ -115,25 +121,10 @@ void Engine::PlayGame(bool autoplay)
         }
  
         
-/*
-        Point point = current_board_->GetPosition(active_);
-        std::cout << "Possible moves from " << point << ":" << std::endl;
-        auto pv = *current_board_->OpenPoints(point);
-        Board b;
-        b.clear();
-        b.SetPosition(active_, current_board_->GetPosition(active_));
-        for (auto p : pv) {
-            b.ClosePoint(p);
-        }
-        std::cout << b << std::endl;
-*/
-        
-        begin = clock();
-
         if(active_ == me_)
             TakeAITurn_();
         else
-            TakeAITurn_();
+            TakeMeatTurn_();
 
         end = clock();
         time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
@@ -147,7 +138,6 @@ void Engine::PlayGame(bool autoplay)
 
 void Engine::TakeAITurn_()
 {
-    turn_start_ = std::chrono::system_clock::now();
     time_expired_ = false;
 
     NodePtr best_node;
@@ -295,15 +285,18 @@ double Engine::Utility_(BoardPtr board) const
             active_reach = board->NumReachable(active_);
             inactive_reach = board->NumReachable(inactive_);
             if (active_reach > inactive_reach)
-                return active_reach - inactive_reach + 1000;
+                return active_reach - inactive_reach + 10000;
             else
-                return -1000;
+                return kNInf;
 
             break;
 
         case kMatchup:
         default:
-            return 2*board->NumMoves(active_) - board->NumMoves(inactive_);
+            if (active_ == me_)
+                return 2*board->NumMoves(active_) - board->NumMoves(inactive_);
+            else
+                return board->NumMoves(active_) - board->NumMoves(inactive_);
             break;
     }
 }
