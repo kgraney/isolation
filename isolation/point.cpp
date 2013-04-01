@@ -67,6 +67,15 @@ prompt_x:
         goto prompt_x;
     }
     pt.set_x(x-1);
- 
-    return stream;
+
+    char c;
+prompt_confirm:
+    std::cout << "input point " << pt << "? [y/n]";
+    std::cin >> c;
+    if (c == 'y')
+        return stream;
+    else if(c == 'n')
+        goto prompt_y;
+    else
+        goto prompt_confirm;
 }
