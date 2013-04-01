@@ -133,7 +133,7 @@ void Engine::PlayGame(bool autoplay)
         if(active_ == me_)
             TakeAITurn_();
         else
-            TakeAITurn_();
+            TakeMeatTurn_();
 
         end = clock();
         time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
