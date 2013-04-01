@@ -47,26 +47,21 @@ std::ostream& operator<< (std::ostream& stream, const Point& pt)
 std::istream& operator>> (std::istream& stream, Point& pt)
 {
     int x, y;
- 
-prompt_y:
-    std::cout << "row (y)? ";
-    stream >> y;
-    if (std::cin.fail()) {
-        std::cin.clear();
-        std::cin.ignore();
-        goto prompt_y;
-    }
-    pt.set_y(y-1);
+    char trash;
 
-prompt_x:
-    std::cout << "column (x)? ";
-    stream >> x;
+prompt:
+    std::cout << "Point in form (y x), that is (row column): ";
+    stream >> trash;
+    stream >> y >> x;
+    stream >> trash;
     if (std::cin.fail()) {
         std::cin.clear();
         std::cin.ignore();
-        goto prompt_x;
+        goto prompt;
     }
     pt.set_x(x-1);
+    pt.set_y(y-1);
+    std::cin.clear();
 
     char c;
 prompt_confirm:
@@ -75,7 +70,7 @@ prompt_confirm:
     if (c == 'y')
         return stream;
     else if(c == 'n')
-        goto prompt_y;
+        goto prompt;
     else
         goto prompt_confirm;
 }
