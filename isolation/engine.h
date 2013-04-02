@@ -45,11 +45,11 @@ private:
     
     std::shared_ptr<NodePtrVec> Successors_(Player player, std::shared_ptr<Node> node) const;
     
-    NodePtr AlphaBeta(std::shared_ptr<Node> node, int depth);
-    NodePtr MaxValue(std::shared_ptr<Node> node, double alpha, double beta, int depth_counter, bool first);
-    NodePtr MinValue(std::shared_ptr<Node> node, double alpha, double beta, int depth_counter, bool first);
+    NodePtr AlphaBeta(std::shared_ptr<Node> node, int depth) const;
+    NodePtr MaxValue(std::shared_ptr<Node> node, double alpha, double beta, int depth_counter, bool first) const;
+    NodePtr MinValue(std::shared_ptr<Node> node, double alpha, double beta, int depth_counter, bool first) const;
 
-    bool CutoffSearch_(NodePtr node);
+    bool CutoffSearch_(NodePtr node) const;
     
     //// Data
     
@@ -65,7 +65,6 @@ private:
 
     std::chrono::time_point<std::chrono::system_clock> turn_start_;
     int turn_limit_; // max seconds a turn can take
-    bool time_expired_;
 };
 
 #endif /* defined(__isolation__engine__) */

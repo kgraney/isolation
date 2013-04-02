@@ -27,6 +27,8 @@ public:
     void set_value(double v) { value_ = v; }
     
     NodePtr get_parent() { return parent_; }
+
+    bool time_expired_;
     
 private:
     

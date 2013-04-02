@@ -9,6 +9,7 @@
 #include <time.h>
 #include <functional>
 #include <algorithm>
+#include <future>
 
 #include "engine.h"
 #include "board.h"
@@ -124,7 +125,7 @@ void Engine::PlayGame(bool autoplay)
         if(active_ == me_)
             TakeAITurn_();
         else
-            TakeMeatTurn_();
+            TakeRandomTurn_();
 
         end = clock();
         time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
@@ -136,27 +137,39 @@ void Engine::PlayGame(bool autoplay)
     }
 }
 
+#define kNumThreads 2
+
 void Engine::TakeAITurn_()
 {
-    time_expired_ = false;
-
     NodePtr best_node;
-    for (int i=2; i <= 14; i+=2) {
+
+    std::future<NodePtr> threads[kNumThreads];
+
+    for (int i=0; i < kNumThreads; i++) {
         BoardPtr new_board(new Board(*current_board_));
         NodePtr new_node(new Node(new_board));
+        threads[i] = std::async(std::launch::async, &Engine::AlphaBeta, this, new_node, 2*i+2);
+    }
+
+    for (int i=0; i <= 16; i++) {
         clock_t start = clock();
-    
-        NodePtr result = AlphaBeta(new_node, i);
+
+        NodePtr result = threads[i%kNumThreads].get();
+
         double time_spent = (double)(clock() - start) / CLOCKS_PER_SEC;
-        std::cout << "depth = " << i << " time = " << time_spent;
+        std::cout << "depth = " << 2*i+2 << " time = " << time_spent;
         std::cout << " utility = " << result->get_value() << std::endl;
-        if (!time_expired_) {
+        if (!(result->time_expired_)) {
             best_node = result;
         } else {
             std::cout << "time expired, pre-mature cut-off" << std::endl;
             break;
         }
-        //std::cout << *best_node->get_board();
+
+        BoardPtr new_board(new Board(*current_board_));
+        NodePtr new_node(new Node(new_board));
+        threads[i%kNumThreads] = std::async(std::launch::async,
+                &Engine::AlphaBeta, this, new_node, 2*(i+kNumThreads)+2);
     }
 
     if (!best_node) {
@@ -197,18 +210,20 @@ prompt_coord:
     move.ApplyToBoard(current_board_);
 }
 
-NodePtr Engine::AlphaBeta(std::shared_ptr<Node> node, int depth)
+NodePtr Engine::AlphaBeta(std::shared_ptr<Node> node, int depth) const
 {
+    //std::cout << "Searching depth " << depth << std::endl;
     NodePtr best = MaxValue(node, kNInf, kPInf, depth, true);  // ENSURE EVEN/ODD DEPTH CORRECT!;
     NodePtr next = best;
     while (next->get_parent() != node)
         next = next->get_parent();
 
     next->set_value(best->get_value());
+    //std::cout << "Finished depth " << depth << std::endl;
     return next;
 }
 
-NodePtr Engine::MaxValue(std::shared_ptr<Node> node, double alpha, double beta, int depth_counter, bool first)
+NodePtr Engine::MaxValue(std::shared_ptr<Node> node, double alpha, double beta, int depth_counter, bool first) const
 {
     if (depth_counter == 0 || (CutoffSearch_(node) && !first)) {
         node->set_value(Utility_(node->get_board()));
@@ -232,7 +247,7 @@ NodePtr Engine::MaxValue(std::shared_ptr<Node> node, double alpha, double beta, 
     return v;
 }
 
-NodePtr Engine::MinValue(std::shared_ptr<Node> node, double alpha, double beta, int depth_counter, bool first)
+NodePtr Engine::MinValue(std::shared_ptr<Node> node, double alpha, double beta, int depth_counter, bool first) const
 {
     if (depth_counter == 0 || (CutoffSearch_(node) && !first)) {
         node->set_value(Utility_(node->get_board()));
@@ -256,14 +271,15 @@ NodePtr Engine::MinValue(std::shared_ptr<Node> node, double alpha, double beta, 
     return v;
 }
 
-bool Engine::CutoffSearch_(NodePtr node)
+bool Engine::CutoffSearch_(NodePtr node) const
 {
     auto now_time = std::chrono::system_clock::now();
     int total_seconds = std::chrono::duration_cast<std::chrono::seconds> (now_time-turn_start_).count();
-    time_expired_ = total_seconds >= turn_limit_;
+    bool time_expired = total_seconds >= turn_limit_;
+    node->time_expired_ = time_expired;
 
     return node->get_board()->IsTerminalBoard() || node->get_board()->IsIsolatedBoard()
-        || time_expired_;
+        || time_expired;
 }
 
 double Engine::Utility_(BoardPtr board) const
