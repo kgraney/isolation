@@ -17,10 +17,14 @@ int main(int argc, const char * argv[])
     std::cout << std::endl;
 
     char p;
+    int time_limit;
     do {
         std::cout << "Which player will AI be? [x/o] ";
         std::cin >> p;
     } while(p != 'x' && p != 'o');
+
+    std::cout << "What's the time limit? ";
+    std::cin >> time_limit;
 
     Player player;
     if (p == 'x')
@@ -28,7 +32,7 @@ int main(int argc, const char * argv[])
     else
         player = kPlayerO;
 
-    Engine eng(player, 20);
+    Engine eng(player, time_limit);
     eng.PlayGame(true);
 
     return 0;
