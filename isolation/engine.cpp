@@ -69,8 +69,7 @@ std::shared_ptr<NodePtrVec> Engine::Successors_(Player player, std::shared_ptr<N
 
 void Engine::PlayGame(bool autoplay)
 {
-    
-    clock_t begin, end;
+    std::chrono::time_point<std::chrono::system_clock> begin, end;
     double time_spent;
     active_ = kPlayerX;
     inactive_ = kPlayerO;
@@ -83,7 +82,7 @@ void Engine::PlayGame(bool autoplay)
        
         std::cout << "----------------- ** NEW TURN ** -----------------" << std::endl;
         std::cout << "-----------------    " << active_ << "    -----------------" << std::endl;
-        std::cout << "turn #: " << i << " last turn time: " << time_spent << std::endl;
+        std::cout << "turn #: " << i << std::endl;
         std::cout << std::endl;
         std::cout << *current_board_;
         std::cout << std::endl;
@@ -91,7 +90,7 @@ void Engine::PlayGame(bool autoplay)
         //GameState current_state_ = FindGameState(current_board_);
         //std::cout << "Game state: " << current_state_ << std::endl;
         std::cout << "starting move..." << std::endl;
-        begin = clock();
+        begin = std::chrono::system_clock::now();
         turn_start_ = std::chrono::system_clock::now();
 
 
@@ -114,7 +113,6 @@ void Engine::PlayGame(bool autoplay)
                 winner = active_; // next player loses if this is a terminal board
             std::cout << "################# !! END GAME !! #################" << std::endl;
             std::cout << "--------------    " << winner << " wins!    --------------" << std::endl;
-            std::cout << "turn #: " << i << " last turn time: " << time_spent << std::endl;
             std::cout << std::endl;
             std::cout << *current_board_;
             std::cout << std::endl;
@@ -127,11 +125,12 @@ void Engine::PlayGame(bool autoplay)
         else
             TakeRandomTurn_();
 
-        end = clock();
-        time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
+        end = std::chrono::system_clock::now();
+        time_spent = std::chrono::duration_cast<std::chrono::milliseconds> (end - begin).count() / 1000.0;
         
         std::cout << std::endl;
         std::cout << active_ << " moved to " << current_board_->GetPosition(active_) << std::endl;
+        std::cout << "time taken: " << time_spent << std::endl;
        
         std::swap(active_, inactive_);
     }
