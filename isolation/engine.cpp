@@ -32,9 +32,9 @@ bool Engine::CompareNodeUtilityReversed_(const NodePtr& a, const NodePtr& b) con
     return Utility_(a->get_board()) > Utility_(b->get_board()); 
 }
 
-Engine::Engine(Player me, int turn_limit)
+Engine::Engine(Player me, double turn_limit, int num_threads)
 : me_(me), current_board_(new Board()), current_node_(new Node(current_board_)),
-    turn_limit_(turn_limit)
+    turn_limit_(turn_limit), num_threads_(num_threads)
 {
     if (me_ == kPlayerX)
         opponent_ = kPlayerO;
@@ -137,15 +137,13 @@ void Engine::PlayGame(bool autoplay)
     }
 }
 
-#define kNumThreads 2
-
 void Engine::TakeAITurn_()
 {
     NodePtr best_node;
 
-    std::future<NodePtr> threads[kNumThreads];
+    std::future<NodePtr> *threads = new std::future<NodePtr> [num_threads_];
 
-    for (int i=0; i < kNumThreads; i++) {
+    for (int i=0; i < num_threads_; i++) {
         BoardPtr new_board(new Board(*current_board_));
         NodePtr new_node(new Node(new_board));
         threads[i] = std::async(std::launch::async, &Engine::AlphaBeta, this, new_node, 2*i+2);
@@ -154,7 +152,7 @@ void Engine::TakeAITurn_()
     for (int i=0; i <= 16; i++) {
         clock_t start = clock();
 
-        NodePtr result = threads[i%kNumThreads].get();
+        NodePtr result = threads[i%num_threads_].get();
 
         double time_spent = (double)(clock() - start) / CLOCKS_PER_SEC;
         std::cout << "depth = " << 2*i+2 << " time = " << time_spent;
@@ -168,8 +166,8 @@ void Engine::TakeAITurn_()
 
         BoardPtr new_board(new Board(*current_board_));
         NodePtr new_node(new Node(new_board));
-        threads[i%kNumThreads] = std::async(std::launch::async,
-                &Engine::AlphaBeta, this, new_node, 2*(i+kNumThreads)+2);
+        threads[i%num_threads_] = std::async(std::launch::async,
+                &Engine::AlphaBeta, this, new_node, 2*(i+num_threads_)+2);
     }
 
     if (!best_node) {
@@ -177,6 +175,7 @@ void Engine::TakeAITurn_()
         std::cout << "!!! End of game " << winner << " wins." << std::endl;
     }
 
+    delete[] threads;
     current_board_ = best_node->get_board();;
 }
 
@@ -212,7 +211,7 @@ prompt_coord:
 
 NodePtr Engine::AlphaBeta(std::shared_ptr<Node> node, int depth) const
 {
-    //std::cout << "Searching depth " << depth << std::endl;
+    //std::cout << "Searching depth " << depth << " in thread " << std::this_thread::get_id() << std::endl;
     NodePtr best = MaxValue(node, kNInf, kPInf, depth, true);  // ENSURE EVEN/ODD DEPTH CORRECT!;
     NodePtr next = best;
     while (next->get_parent() != node)
@@ -274,12 +273,11 @@ NodePtr Engine::MinValue(std::shared_ptr<Node> node, double alpha, double beta, 
 bool Engine::CutoffSearch_(NodePtr node) const
 {
     auto now_time = std::chrono::system_clock::now();
-    int total_seconds = std::chrono::duration_cast<std::chrono::seconds> (now_time-turn_start_).count();
-    bool time_expired = total_seconds >= turn_limit_;
+    int total_seconds = std::chrono::duration_cast<std::chrono::milliseconds> (now_time-turn_start_).count();
+    bool time_expired = total_seconds >= (1000*turn_limit_);
     node->time_expired_ = time_expired;
 
-    return node->get_board()->IsTerminalBoard() || node->get_board()->IsIsolatedBoard()
-        || time_expired;
+    return time_expired || node->get_board()->IsTerminalBoard() || node->get_board()->IsIsolatedBoard();
 }
 
 double Engine::Utility_(BoardPtr board) const

@@ -25,7 +25,7 @@ const double kNInf = -std::numeric_limits<double>::infinity();
 class Engine
 {
 public:
-    Engine(Player me, int turn_limit);
+    Engine(Player me, double turn_limit, int num_threads);
     
     const std::shared_ptr<Board> get_current_board() { return current_board_; }
     
@@ -64,7 +64,8 @@ private:
     Player inactive_;
 
     std::chrono::time_point<std::chrono::system_clock> turn_start_;
-    int turn_limit_; // max seconds a turn can take
+    double turn_limit_; // max seconds a turn can take
+    int num_threads_;
 };
 
 #endif /* defined(__isolation__engine__) */
