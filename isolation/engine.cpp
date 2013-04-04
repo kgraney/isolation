@@ -108,7 +108,7 @@ void Engine::PlayGame(bool autoplay)
  
         // Check if someone has won yet
         Player winner = current_board_->IsTerminalBoard();
-        if (winner) {
+        if (winner && (winner == inactive_ || winner == kAllPlayers)) {
             if (winner == kAllPlayers)
                 winner = active_; // next player loses if this is a terminal board
             std::cout << "################# !! END GAME !! #################" << std::endl;
@@ -123,7 +123,7 @@ void Engine::PlayGame(bool autoplay)
         if(active_ == me_)
             TakeAITurn_();
         else
-            TakeRandomTurn_();
+            TakeMeatTurn_();
 
         end = std::chrono::system_clock::now();
         time_spent = std::chrono::duration_cast<std::chrono::milliseconds> (end - begin).count() / 1000.0;
