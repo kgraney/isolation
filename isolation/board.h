@@ -23,7 +23,10 @@ class Board
 {
     friend std::ostream& operator<< (std::ostream&, const Board&);
     
+    // The size of the board (length of one side).
     static const int kSize = 8;
+
+    // All valid directions we can move in from one point.
     static const std::initializer_list<Point> kPointDirections;
     
 public:
@@ -48,12 +51,18 @@ public:
     inline void set_oloc(const Point& pt) { set_loc_(pt, &oloc_); }
     void SetPosition(Player player, Point pt);
     
+    // Return a list of points that can be moved to from the reference point
+    // in a single move.
     std::shared_ptr<PointVec> OpenPoints(const Point& ref) const;
     
+    // Mark the point as closed
     void ClosePoint(const Point& pt);
     
+    // Return true if the point is open, false if it's closed
     bool PointOpen(const Point& pt) const;
 
+    // Like PointOpen, but also considers the location of a player to be an
+    // open point.  This is used when finding if a path to a point exists.
     bool PointLooseOpen(const Point& pt) const;
     
     // Returns a list of points surrounding the point p.  Does not include
@@ -65,32 +74,41 @@ public:
     
     // return a list of moves the given player can make on a board
     std::unique_ptr<MovePtrVec> SuccessorMoves(Player player) const;
+
+    // Return the number of moves a given player can make on this turn
     size_t NumMoves(const Player& player) const;
     
+    // Return the number of spaces the given player is capable of reaching with
+    // infinite moves from this position (if the rest of the board doesn't change)
     size_t NumReachable(const Player& player) const;
     
 private:
 
     bool InvalidDiagonal(const Point& ref, const Point& direction) const;
     
+    // Returns true if the point is on the board, false otherwise.
     bool OnBoard(const Point& p) const;
     
     void set_loc_(const Point& p, Point* loc);
     
-    // true if cell is available, false if it's blocked
+    // Array storing open/closed state of board positions.  True if cell is
+    // available; false if it's blocked.
     bool array_[kSize][kSize];
     
-    Point xloc_; // my location
-    Point oloc_; // my opponent's location
+    Point xloc_; // The location of the x-player
+    Point oloc_; // The location of the o-player
 
-    bool is_isolated_; // cache of this board being isolated
-    bool is_isolated_valid_;
-
+    // Recursive search function used by IsIsolatedBoard() that tries to find an
+    // open path connecting the two players.
     bool SearchForPath_(const Point& start, const Point& goal, PointSet*) const;
-    size_t OpenPointSearch_(const Point& ref, Point direction = Point(0,0), std::shared_ptr<PointVec> lst = nullptr) const;
-    size_t ExploreReachable_(const Point& start, PointSet* explored) const;
 
-    void ClearCaches_();
+    // Recursive search function used by OpenPoints() and NumMoves() that
+    // searches for points reachable in a single move (DFS-like).
+    size_t OpenPointSearch_(const Point& ref, Point direction = Point(0,0), std::shared_ptr<PointVec> lst = nullptr) const;
+
+    // Recursive search function used by NumReachable() that explores all
+    // points reachable in any number of moves.
+    size_t ExploreReachable_(const Point& start, PointSet* explored) const;
 };
 
 #endif /* defined(__isolation__board__) */

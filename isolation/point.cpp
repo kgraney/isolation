@@ -33,6 +33,7 @@ void Point::set_y(int y)
 
 double Point::DistanceTo(const Point& p) const
 {
+    // Distance from this point to another point
     int xdiff = x() - p.x();
     int ydiff = y() - p.y();
     return sqrt(xdiff*xdiff + ydiff*ydiff);
@@ -40,12 +41,15 @@ double Point::DistanceTo(const Point& p) const
 
 std::ostream& operator<< (std::ostream& stream, const Point& pt)
 {
+    // The (y x) format specified in the assignment.
     stream << "(" << 1+pt.y() << " " << 1+pt.x() << ")";
     return stream;
 }
 
 std::istream& operator>> (std::istream& stream, Point& pt)
 {
+    // Read the (y x) format specified in the assignment.  Note that
+    // input is 1-based and internal storage is 0-based.
     int x, y;
     char trash;
 

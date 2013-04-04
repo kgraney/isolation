@@ -56,10 +56,11 @@ inline bool operator!=(const Point& lhs, const Point& rhs)
     return !operator==(lhs, rhs);
 }
 
+// This operator is required for placement of Points into std::set
+// red-black trees.
 inline bool operator<(const Point& lhs, const Point& rhs)
 {
-    // order by x then y (need for placement in std::set
-    // red-black tree)
+    // Order by x then y
     if (lhs.x() == rhs.x())
         return lhs.y() < rhs.y();
     else

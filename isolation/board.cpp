@@ -22,7 +22,7 @@ const std::initializer_list<Point> Board::kPointDirections = {
 };
 
 Board::Board()
-: xloc_(0,0), oloc_(kSize-1,kSize-1), is_isolated_valid_(false)
+: xloc_(0,0), oloc_(kSize-1,kSize-1)
 {
     for (int x=0; x < kSize; x++) {
         for (int y=0; y < kSize; y++) {
@@ -34,16 +34,14 @@ Board::Board()
     // closed by set_loc_
     ClosePoint(Point(0,0));
     ClosePoint(Point(kSize-1, kSize-1));
-    ClearCaches_();
 }
 
 Board::Board(const Board& board)
-: xloc_(board.xloc_), oloc_(board.oloc_), is_isolated_valid_(board.is_isolated_valid_)
+: xloc_(board.xloc_), oloc_(board.oloc_)
 {
     for (int x=0; x < kSize; x++)
         for (int y=0; y < kSize; y++)
             array_[x][y] = board.array_[x][y];
-    ClearCaches_();
 }
 
 void Board::clear()
@@ -53,7 +51,6 @@ void Board::clear()
             array_[x][y] = true;
     xloc_ = Point(-1,-1);
     oloc_ = Point(-1,-1);
-    ClearCaches_(); 
 }
 
 void Board::set_loc_(const Point& pt, Point* loc)
@@ -83,7 +80,6 @@ void Board::ClosePoint(const Point& pt)
 {
     if (OnBoard(pt)) {
         array_[pt.x()][pt.y()] = false;
-        ClearCaches_(); 
     } else
         throw std::out_of_range("Point not on the board");
 }
@@ -222,15 +218,9 @@ bool Board::OnBoard(const Point& p) const
 
 bool Board::IsIsolatedBoard()
 {
-    //if (is_isolated_valid_)
-    //    return is_isolated_;
-
     PointSet* explored = new PointSet;
     bool result = SearchForPath_(get_xloc(), get_oloc(), explored);
     delete explored;
-
-    is_isolated_ = result;
-    is_isolated_valid_ = true;
 
     return !result;
 }
@@ -328,10 +318,4 @@ size_t Board::ExploreReachable_(const Point& start, PointSet* explored) const
     }
     return size;
 }
-
-void Board::ClearCaches_()
-{
-    is_isolated_valid_ = false;
-}
-
 
