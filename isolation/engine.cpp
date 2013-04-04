@@ -87,8 +87,6 @@ void Engine::PlayGame(bool autoplay)
         std::cout << *current_board_;
         std::cout << std::endl;
 
-        //GameState current_state_ = FindGameState(current_board_);
-        //std::cout << "Game state: " << current_state_ << std::endl;
         std::cout << "starting move..." << std::endl;
         begin = std::chrono::system_clock::now();
         turn_start_ = std::chrono::system_clock::now();
@@ -106,11 +104,11 @@ void Engine::PlayGame(bool autoplay)
             }
         }
  
-        // Check if someone has won yet
+        // Check if the other player just won (because the active player has no moves)
         Player winner = current_board_->IsTerminalBoard();
         if (winner && (winner == inactive_ || winner == kAllPlayers)) {
             if (winner == kAllPlayers)
-                winner = active_; // next player loses if this is a terminal board
+                winner = inactive_; // this player loses if this is a terminal board
             std::cout << "################# !! END GAME !! #################" << std::endl;
             std::cout << "--------------    " << winner << " wins!    --------------" << std::endl;
             std::cout << std::endl;

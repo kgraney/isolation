@@ -36,7 +36,7 @@ int main(int argc, const char * argv[])
     else
         player = kPlayerO;
 
-    Engine eng(player, time_limit, num_threads);
+    Engine eng(player, time_limit-0.5, num_threads);
     eng.PlayGame(true);
 
     return 0;
