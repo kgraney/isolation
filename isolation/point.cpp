@@ -40,7 +40,7 @@ double Point::DistanceTo(const Point& p) const
 
 std::ostream& operator<< (std::ostream& stream, const Point& pt)
 {
-    stream << "(" << 1+pt.x() << "," << 1+pt.y() << ")";
+    stream << "(" << 1+pt.y() << " " << 1+pt.x() << ")";
     return stream;
 }
 
